@@ -1,0 +1,71 @@
+<style>
+#help-wrapper { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; color: #111; max-width: 860px; margin: 0 auto; padding: 12px 16px 28px 16px; }
+#help-wrapper h1 { font-size: 1.6rem; margin: 0 0 8px 0; }
+#help-wrapper h2 { margin-top: 18px; font-size: 1.2rem; border-left: 4px solid #1e88e5; padding-left: 8px; }
+#help-wrapper p { margin: 8px 0; }
+#help-wrapper ul { margin: 6px 0 12px 20px; }
+.badge { display: inline-block; border-radius: 999px; font-size: 0.80rem; padding: 2px 8px; border: 1px solid #e0e0e0; background: #f6f8fb; margin-left: 6px; }
+.note { background: #fff8e1; border: 1px solid #ffe082; padding: 10px 12px; border-radius: 8px; }
+hr { border: none; height: 1px; background: #eceff1; margin: 16px 0; }
+.small { font-size: 0.92rem; color: #333; }
+</style>
+
+<div id="help-wrapper">
+  <h1>Hilfe &amp; Anleitung 📖</h1>
+  <p class="note"><strong>Wichtig:</strong> Personen- und Ring-Code werden automatisch vom Programm vergeben. Die Logik wurde vom Wappenspender, <strong>Olaf Geppert</strong>, erfunden und vorgegeben.</p>
+
+  <h2>🧭 Zweck der Anwendung</h2>
+  <p>Diese Anwendung hilft dir, Familienmitglieder zu erfassen, den grafischen Stammbaum zu visualisieren und die Vererbung der Wappenringe der Familie GEPPERT nachzuverfolgen. Du hast eine Tabelle, eine Baumansicht, Export/Import, Druck und Statistik.</p>
+
+  <h2>🧬 Personen-Code-System</h2>
+  <ul>
+    <li>Der <strong>Personen-Code</strong> wird <strong>vom System vergeben</strong> (keine manuelle Eingabe).</li>
+    <li>Stammvater = <code>1</code>, Partner(in) = <code>1x</code> (<code>x</code> immer klein).</li>
+    <li>Kinder des Stammvaters: <code>1A</code>, <code>1B</code>, <code>1C</code> … (Buchstaben stets groß).</li>
+    <li>Enkel: Zahlen hinter dem Code des jeweiligen Kindes in <strong>Geburtsreihenfolge</strong> (TT.MM.JJJJ). Beispiel: erstes Kind von <code>1A</code> → <code>1A1</code>, zweites → <code>1A2</code>.</li>
+    <li>Buchstaben werden automatisch groß, das Partner-Suffix <code>x</code> bleibt klein.</li>
+  </ul>
+
+  <h2>💍 Ring-Codes</h2>
+  <ul>
+    <li>Ring-Code entspricht dem Personen-Code.</li>
+    <li>Bei Vererbung: Anschlussgravur mit Pfeil, z. B. <code>1B → 1B2</code>.</li>
+    <li>Partner tragen ihr <code>x</code> im Ring-Code (z. B. <code>1x</code>).</li>
+    <li>So bleibt der Ring des Erblassers vollständig erhalten.</li>
+  </ul>
+
+  <h2>🗂️ Daten &amp; Bedienung</h2>
+  <ul>
+    <li><strong>Neue Person</strong>: Dialog öffnen; <em>Abbrechen geht jederzeit</em>.</li>
+    <li><strong>Bearbeiten</strong>: Doppelklick auf Tabellenzeile.</li>
+    <li><strong>Suche</strong>: Filtert die Tabelle live; Fundstellen werden markiert.</li>
+    <li><strong>Person löschen</strong>: per Name oder Code; Referenzen werden entfernt.</li>
+    <li><strong>Undo/Redo</strong>: Änderungen rückgängig/erneut anwenden.</li>
+  </ul>
+
+  <h2>🌳 Stammbaum</h2>
+  <ul>
+    <li>Automatisches Neu-Rendern bei jeder Datenänderung (auch nach Import).</li>
+    <li>Generationen vertikal; Partner-Buslinie (wenn keine gemeinsamen Kinder).</li>
+    <li>Eltern–Kind: Senkrecht nach unten zur gemeinsamen Linie, dann zu den Kindern.</li>
+    <li>Knoten: Zeile 1 „Code / Name“, Zeile 2 „Generation: n / Geburtsdatum“; farbig je Generation.</li>
+  </ul>
+
+  <h2>📊 Statistik</h2>
+  <ul>
+    <li><span class="badge">Gesamt</span> Anzahl Personen</li>
+    <li><span class="badge">Geschlecht</span> männlich, weiblich, divers</li>
+    <li><span class="badge">Generationen</span> pro Generation</li>
+  </ul>
+
+  <h2>💾 Export / Import</h2>
+  <ul>
+    <li><strong>Export</strong>: JSON und CSV. Auf iOS → „Teilen“, sonst Download.</li>
+    <li><strong>Import</strong>: JSON/CSV; Baum rendert danach automatisch neu.</li>
+    <li><strong>Drucken</strong>: Auswahl (Tabelle/Baum/Beides); erzeugt PDF über den Druckdialog.</li>
+    <li class="note small">Daten sind nur lokal gespeichert → bitte regelmäßig sichern.</li>
+  </ul>
+
+  <hr>
+  <p class="small">Stand: 20.08.2025</p>
+</div>
