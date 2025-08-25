@@ -348,7 +348,7 @@ function renderTree() {
     let totalSvgWidth = 0;
     let totalSvgHeight = 0;
 
-    generations.forEach((gen, genIndex) => {
+    generations.forEach((gen, genIndex) {
         const persons = byGeneration[gen];
         const y = 140 + genIndex * verticalSpacing;
 
@@ -392,7 +392,7 @@ function renderTree() {
     svg.setAttribute("width", totalSvgWidth);
     svg.setAttribute("height", totalSvgHeight);
 
-    generations.forEach((gen, genIndex) => {
+    generations.forEach((gen, genIndex) {
         const persons = byGeneration[gen];
         const y = 140 + genIndex * verticalSpacing;
 
@@ -422,7 +422,7 @@ function renderTree() {
 
         let currentX = 100; // Start mit Margin
 
-        groupedPersons.forEach((group) => {
+        groupedPersons.forEach((group) {
             if (group.length === 2) {
                 const partner1 = group[0];
                 const partner2 = group[1];
@@ -432,7 +432,7 @@ function renderTree() {
                 currentX += boxWidth * 2 + partnerGap + horizontalSpacing;
             } else {
                 const person = group[0];
-                positions.set(person.Code, { x: currentX + boxWidth / 2, y: y, person: person });
+                positions.set(person.Code, { x: currentX + boxWidth / 2, y: y, person: person );
                 currentX += boxWidth + horizontalSpacing;
             }
         });
@@ -571,7 +571,7 @@ function renderTree() {
         }
     });
 
-    generations.forEach((gen, genIndex) => {
+    generations.forEach((gen, genIndex) {
         const y = 140 + genIndex * verticalSpacing - 20;
         const labelText = document.createElementNS(svgNS, "text");
         labelText.setAttribute("x", "40");
@@ -856,105 +856,173 @@ async function shareOrDownload(filename, blob) {
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
+// DRUCKFUNKTIONEN FÜR WINDOWS/MAC
 function printTable() {
     $("#dlgPrint").close();
-    const el = resolvePrintableEl('#peopleTable');
-    elementToPdfBlob(el, 'Tabelle').then(blob => shareOrDownloadPDF(blob, 'tabelle.pdf'));
+    
+    const originalStyles = document.head.innerHTML;
+    const printWindow = window.open('', '_blank');
+    
+    const tableContent = $("#peopleTable").outerHTML;
+    const title = "Wappenringe der Familie GEPPERT - Personenliste";
+    const date = new Date().toLocaleDateString('de-DE');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px; 
+                    font-size: 12px;
+                }
+                h1 { 
+                    text-align: center; 
+                    color: #2c3e50; 
+                    margin-bottom: 10px;
+                    font-size: 18px;
+                }
+                .print-date {
+                    text-align: center;
+                    color: #666;
+                    margin-bottom: 20px;
+                    font-size: 11px;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 10px;
+                    font-size: 11px;
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 6px; 
+                    text-align: left;
+                }
+                th { 
+                    background-color: #f8f9fa; 
+                    font-weight: bold;
+                }
+                tr:nth-child(even) {
+                    background-color: #f8f9fa;
+                }
+                @media print {
+                    body { margin: 0; padding: 15px; }
+                    table { font-size: 10px; }
+                    th, td { padding: 4px; }
+                }
+                @page {
+                    margin: 1cm;
+                    size: landscape;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>${title}</h1>
+            <div class="print-date">Druckdatum: ${date}</div>
+            ${tableContent}
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
 }
 
 function printTree() {
     $("#dlgPrint").close();
-    const el = resolvePrintableEl('#tree');
-    elementToPdfBlob(el, 'Stammbaum').then(blob => shareOrDownloadPDF(blob, 'stammbaum.pdf'));
-}
-
-function resolvePrintableEl(sel, fallbackSel) {
-    let el = document.querySelector(sel);
-    if (!el && fallbackSel) el = document.querySelector(fallbackSel);
-    if (!el) {
-        if (sel.includes('table')) el = document.getElementById('peopleTable') || document.querySelector('table');
-        else if (sel.includes('tree')) el = document.getElementById('tree') || document.querySelector('svg');
-    }
-    return el;
-}
-
-async function elementToPdfBlob(el, title) {
-    if (!el) {
-        alert("Element zum Drucken nicht gefunden.");
-        return null;
-    }
-
-    const clone = el.cloneNode(true);
-    const wrapper = document.createElement('div');
-    const titleWrap = document.querySelector('.ribbon .title-wrap');
-
-    if (titleWrap) {
-        const header = titleWrap.cloneNode(true);
-        header.style.marginBottom = '12px';
-        wrapper.appendChild(header);
-    } else {
-        const fallbackHeader = document.createElement('div');
-        fallbackHeader.style.textAlign = 'center';
-        fallbackHeader.style.marginBottom = '12px';
-        fallbackHeader.innerHTML = '<h2>Wappenringe der Familie GEPPERT</h2>';
-        wrapper.appendChild(fallbackHeader);
-    }
-
-    wrapper.appendChild(clone);
-    wrapper.style.padding = '16px';
-    wrapper.style.background = '#ffffff';
-    document.body.appendChild(wrapper);
-
-    try {
-        const canvas = await html2canvas(wrapper, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-        const img = canvas.toDataURL('image/jpeg', 0.92);
-        const { jsPDF } = window.jspdf;
-        const orientation = canvas.width > canvas.height ? 'l' : 'p';
-        const doc = new jsPDF({ orientation, unit: 'pt', format: 'a4' });
-        const pageW = doc.internal.pageSize.getWidth();
-        const pageH = doc.internal.pageSize.getHeight();
-        const margin = 24;
-
-        let w = pageW - margin * 2;
-        let h = canvas.height * (w / canvas.width);
-        if (h > pageH - margin * 2) { h = pageH - margin * 2; w = canvas.width * (h / canvas.height); }
-        const x = (pageW - w) / 2, y = margin;
-
-        doc.addImage(img, 'JPEG', x, y, w, h);
-        return doc.output('blob');
-    } catch (error) {
-        console.error("PDF generation error:", error);
-        return null;
-    } finally {
-        wrapper.remove();
-    }
-}
-
-async function shareOrDownloadPDF(blob, filename) {
-    if (!blob) return;
-    try {
-        const file = new File([blob], filename, { type: 'application/pdf' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: 'Wappenringe der Familie GEPPERT' });
-            return;
-        }
-    } catch (e) { /* fall through */ }
-
-    if (isIOS()) {
-        if (filename.includes('tabelle')) printSection('table');
-        else printSection('tree');
+    
+    const treeContainer = $("#tree");
+    const title = "Wappenringe der Familie GEPPERT - Stammbaum";
+    const date = new Date().toLocaleDateString('de-DE');
+    
+    // SVG klonen und für Druck optimieren
+    const svg = treeContainer.querySelector('svg');
+    if (!svg) {
+        alert("Stammbaum konnte nicht gefunden werden.");
         return;
     }
-
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    
+    const clonedSvg = svg.cloneNode(true);
+    clonedSvg.setAttribute('width', '100%');
+    clonedSvg.setAttribute('height', 'auto');
+    
+    const printWindow = window.open('', '_blank');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { 
+                    margin: 0; 
+                    padding: 20px; 
+                    background: white;
+                    font-family: Arial, sans-serif;
+                }
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                h1 {
+                    color: #2c3e50;
+                    font-size: 20px;
+                    margin: 0 0 5px 0;
+                }
+                .print-date {
+                    color: #666;
+                    font-size: 12px;
+                }
+                .tree-container {
+                    width: 100%;
+                    height: auto;
+                    overflow: visible;
+                }
+                svg {
+                    max-width: 100%;
+                    height: auto;
+                }
+                @media print {
+                    body { padding: 0; margin: 0; }
+                    .print-header { margin-bottom: 10px; }
+                    h1 { font-size: 16px; }
+                    @page {
+                        margin: 1cm;
+                        size: landscape;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-header">
+                <h1>${title}</h1>
+                <div class="print-date">Druckdatum: ${date}</div>
+            </div>
+            <div class="tree-container">${clonedSvg.outerHTML}</div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
 }
-
-const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 function updateStats() {
     let total = 0, m = 0, w = 0, d = 0; const byGen = {};
