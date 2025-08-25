@@ -1,2 +1,2 @@
 // version.js - Zentrale Versionsverwaltung
-const APP_VERSION = 'v1.11';
+const APP_VERSION = 'v1.12';
