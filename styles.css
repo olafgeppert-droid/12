@@ -1,119 +1,98 @@
-/* styles.css – modernes, gut lesbares UI */
-:root{
+/* styles.css – KORRIGIERTE VERSION */
+:root {
+  /* ... (alle Ihre Farbvariablen bleiben gleich) ... */
   --brand: #1665d8;
-  --brand2: #0f4fb3;
-  /* ... restliche Variablen ... */
+  --panel: #ffffff;
+  --border: #e5e7eb;
+}
+/* ... (alle Ihre Basis-Styles für body, .app, .ribbon etc. bleiben gleich) ... */
+
+/* Tree panel - KORREKTUREN FÜR ÜBERLAPPUNG & INTERAKTION */
+.tree-panel {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+  margin: 12px;
 }
 
-/* ... restliche Styles ... */
+#treeContainer {
+  width: 100%;
+  height: 65vh; /* Feste Höhe für den Container */
+  overflow: hidden; /* Scrollen wird per JS (Pan) gesteuert */
+  cursor: grab;
+  position: relative;
+}
 
-/* Tree panel - KORREKTUREN FÜR ÜBERLAPPUNG */
-.tree-panel{padding:8px 12px}
-
-#treeContainer { /* NEU: Container für bessere Kontrolle */
+#tree {
   width: 100%;
   height: 100%;
-  overflow: auto; /* Scrollbalken hier, nicht am #tree-Element */
-  -webkit-overflow-scrolling: touch; /* Flüssiges Scrollen auf iOS */
+}
+#tree svg {
+  width: 100%;
+  height: 100%;
 }
 
-#tree{
-  background:#f8fafc;
-  border:1px solid var(--border);
-  border-radius:8px;
-  min-height:240px;
-  max-height:60vh;
-  /* Overflow wurde zum Container verschoben */
-  position: relative; /* Wichtig für absolut positionierte Kind-Elemente (Nodes) */
-}
-
-/* WICHTIG: Diese Regel entfernen oder auskommentieren, da sie die Schriftgröße überschreibt */
-/* .node text{font-size:11px;fill:#111827} */
-
-/* NEUE REGEL: Stellt sicher, dass Box-Berechnungen konsistent sind */
 .node {
-  box-sizing: border-box; 
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.node:hover {
+  transform: translateY(-2px);
 }
 
+/* ... (alle Ihre Dialog- und Formular-Styles bleiben gleich) ... */
 
-/* ... restliche Styles bis zum Druck ... */
-
-
-/* Print styles for better printing experience - ÜBERARBEITET */
-/* Diese Klasse muss per JS vor dem Aufruf von html2canvas auf den body gesetzt werden */
+/* KORRIGIERTE DRUCK-STILE */
+/* Diese Klasse wird per JS vor dem Aufruf von html2canvas auf den body gesetzt */
 body.printing-mode {
     background: white !important;
-    font-size: 10pt; /* Kleinere Schrift für den Druck */
+    font-size: 10pt;
     color: #000 !important;
 }
 
 /* Versteckt alles, was nicht gedruckt werden soll */
-.printing-mode .ribbon,
-.printing-mode .toolbar,
-.printing-mode .hint-row,
-.printing-mode .table-hint,
-.printing-mode .version-under,
-.printing-mode dialog,
-.printing-mode .table-wrap:not(.print-this), /* Verstecke Tabelle, außer sie soll gedruckt werden */
-.printing-mode .tree-panel:not(.print-this) { /* Verstecke Baum, außer er soll gedruckt werden */
+body.printing-mode > *:not(.print-this-parent) {
     display: none !important;
 }
 
-/* Stellt sicher, dass das zu druckende Element den ganzen Platz einnimmt */
-.printing-mode .print-this {
+/* Der direkte Container des zu druckenden Elements wird sichtbar gemacht */
+body.printing-mode .print-this-parent {
     display: block !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
     width: 100% !important;
     height: auto !important;
-    overflow: visible !important;
-    background: white !important;
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
-    padding: 0 !important;
-    max-height: none !important; /* Wichtig, um Höhenbeschränkungen aufzuheben */
+    padding: 20px !important; /* Etwas Rand im PDF */
+    background: white !important;
 }
 
-/* Spezifische Stile für den Tabellendruck */
-.printing-mode .table-wrap.print-this table {
+/* Stellt sicher, dass das Element selbst korrekt skaliert wird */
+.print-this-parent .print-this {
+    overflow: visible !important;
     width: 100% !important;
-    border-collapse: collapse !important;
-    font-size: 9pt !important;
-}
-
-.printing-mode .table-wrap.print-this th,
-.printing-mode .table-wrap.print-this td {
-    border: 1px solid #ccc !important;
-    padding: 4pt 6pt !important;
-}
-
-/* Spezifische Stile für den Baum-Druck */
-.printing-mode .tree-panel.print-this #treeContainer {
-    overflow: visible !important;
     height: auto !important;
     max-height: none !important;
 }
 
-.printing-mode .tree-panel.print-this #tree {
-    /* Wichtig: Breite so setzen, dass der ganze Baum Platz hat. Muss evtl. per JS angepasst werden. */
-    width: fit-content !important; 
+/* Spezifische Stile für den Baum-Druck im PDF */
+.printing-mode #treeContainer {
     height: auto !important;
     overflow: visible !important;
-    max-height: none !important;
-    border: none !important;
 }
-
-/* Verbessert die Lesbarkeit des Baums im erzeugten PDF */
 .printing-mode .node text {
-    font-size: 10pt !important;
+    font-size: 10pt !important; /* Ggf. anpassen für bessere Lesbarkeit */
     fill: #000 !important;
 }
-
-.printing-mode .node rect, .printing-mode .node circle {
+.printing-mode .node rect {
     stroke: #000 !important;
-    fill: #fff !important; /* Weißer Hintergrund für Kontrast */
 }
-
-.printing-mode .link { /* Falls die Verbindungslinien eine Klasse 'link' haben */
+.printing-mode path,
+.printing-mode line {
     stroke: #333 !important;
     stroke-width: 1.5px !important;
 }
