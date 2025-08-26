@@ -1,98 +1,76 @@
-/* styles.css – KORRIGIERTE VERSION */
+/* styles.css – KORRIGIERTE & BEREINIGTE VERSION */
 :root {
-  /* ... (alle Ihre Farbvariablen bleiben gleich) ... */
-  --brand: #1665d8;
-  --panel: #ffffff;
-  --border: #e5e7eb;
+  --brand: #1665d8; --brand2: #0f4fb3; --ribbon-fg: #fff; --panel: #ffffff;
+  --border: #e5e7eb; --text: #111827; --muted: #6b7280; --danger: #dc2626;
 }
-/* ... (alle Ihre Basis-Styles für body, .app, .ribbon etc. bleiben gleich) ... */
+/* ... (Die meisten Ihrer Stile wie .app, .ribbon, .toolbar, .btn, table etc. können unverändert bleiben) ... */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#fafafa;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif}
+.app{max-width:1240px;margin:0 auto;padding-bottom:32px}
+/* ... Fügen Sie hier Ihre bestehenden, unveränderten Stile ein ... */
 
-/* Tree panel - KORREKTUREN FÜR ÜBERLAPPUNG & INTERAKTION */
+/* KORRIGIERTE STILE FÜR STAMMBAUM & DRUCK */
 .tree-panel {
-  padding: 8px 12px;
+  padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #f8fafc;
   margin: 12px;
 }
-
 #treeContainer {
   width: 100%;
-  height: 65vh; /* Feste Höhe für den Container */
+  height: 70vh;
   overflow: hidden; /* Scrollen wird per JS (Pan) gesteuert */
   cursor: grab;
   position: relative;
 }
-
-#tree {
+#tree, #tree svg {
   width: 100%;
   height: 100%;
 }
-#tree svg {
-  width: 100%;
-  height: 100%;
-}
-
 .node {
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.1s ease-in-out;
 }
 .node:hover {
   transform: translateY(-2px);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* ... (alle Ihre Dialog- und Formular-Styles bleiben gleich) ... */
-
-/* KORRIGIERTE DRUCK-STILE */
-/* Diese Klasse wird per JS vor dem Aufruf von html2canvas auf den body gesetzt */
+/* KORRIGIERTE & VEREINFACHTE DRUCK-STILE */
 body.printing-mode {
     background: white !important;
-    font-size: 10pt;
-    color: #000 !important;
 }
-
-/* Versteckt alles, was nicht gedruckt werden soll */
-body.printing-mode > *:not(.print-this-parent) {
+/* Versteckt alles, während der Druck vorbereitet wird */
+body.printing-mode > * {
     display: none !important;
 }
-
-/* Der direkte Container des zu druckenden Elements wird sichtbar gemacht */
-body.printing-mode .print-this-parent {
+/* Zeigt nur den Container an, der das zu druckende Element enthält */
+body.printing-mode .print-container {
     display: block !important;
-    position: absolute !important;
+    position: fixed !important; /* Wichtig für html2canvas */
     top: 0;
     left: 0;
-    width: 100% !important;
+    width: auto !important; /* Passt sich dem Inhalt an */
     height: auto !important;
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 20px !important; /* Etwas Rand im PDF */
+    padding: 20px !important;
     background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 9999;
 }
-
-/* Stellt sicher, dass das Element selbst korrekt skaliert wird */
-.print-this-parent .print-this {
-    overflow: visible !important;
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-}
-
-/* Spezifische Stile für den Baum-Druck im PDF */
-.printing-mode #treeContainer {
-    height: auto !important;
-    overflow: visible !important;
+/* Stile für den Baum im Druckmodus */
+.printing-mode #tree svg {
+    background-color: white !important;
 }
 .printing-mode .node text {
-    font-size: 10pt !important; /* Ggf. anpassen für bessere Lesbarkeit */
+    font-size: 10pt !important;
     fill: #000 !important;
 }
 .printing-mode .node rect {
     stroke: #000 !important;
 }
-.printing-mode path,
-.printing-mode line {
+.printing-mode path, .printing-mode line {
     stroke: #333 !important;
-    stroke-width: 1.5px !important;
 }
