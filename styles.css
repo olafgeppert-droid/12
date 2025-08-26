@@ -2,564 +2,118 @@
 :root{
   --brand: #1665d8;
   --brand2: #0f4fb3;
-  --ribbon-fg: #fff;
-  --panel: #ffffff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --danger: #dc2626;
-  --button-height: 38px;
-  --button-font-size: 14px;
-  --input-height: 38px;
-  
-  /* Generation colors */
-  --gen1-color: #e8f5e8;
-  --gen2-color: #e3f2fd;
-  --gen3-color: #f3e5f5;
-  --gen4-color: #fff3e0;
-  --gen5-color: #e8eaf6;
-  --gen6-color: #f1f8e9;
-  --gen7-color: #ffebee;
+  /* ... restliche Variablen ... */
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:#fafafa;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif}
+/* ... restliche Styles ... */
 
-.app{max-width:1240px;margin:0 auto;padding-bottom:32px}
+/* Tree panel - KORREKTUREN FÜR ÜBERLAPPUNG */
+.tree-panel{padding:8px 12px}
 
-/* Ribbon */
-.ribbon{
-  position:sticky; top:0; z-index:5;
-  background: linear-gradient(90deg, var(--brand), var(--brand2));
-  color:var(--ribbon-fg);
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-  position: relative;
-  padding-bottom: 20px;
-}
-.title-wrap{display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 16px}
-.title{margin:0;font-size:28px;letter-spacing:.3px;text-align:center}
-.coa{height:34px;width:auto}
-
-/* Toolbar */
-.toolbar{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background:#fff;
-  border-top:1px solid rgba(255,255,255,.2);
-  border-bottom:1px solid var(--border);
-  padding:12px;
+#treeContainer { /* NEU: Container für bessere Kontrolle */
   width: 100%;
+  height: 100%;
+  overflow: auto; /* Scrollbalken hier, nicht am #tree-Element */
+  -webkit-overflow-scrolling: touch; /* Flüssiges Scrollen auf iOS */
 }
 
-.button-row{
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.search-container{
-  display: flex;
-  justify-content: center;
-  flex: 1;
-  max-width: 280px;
-  margin: 0 10px;
-}
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content: center;
-  gap:6px;
-  padding:8px 12px;
-  height: var(--button-height);
-  min-width: 100px;
-  border:1px solid #d0d7de;
-  background:#f4f6f8;
-  color:#111827;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:600;
-  font-size: var(--button-font-size);
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-.btn:hover{
-  background:#eef2f7;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.btn:focus{
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-}
-.btn[disabled]{opacity:.5;pointer-events:none}
-.btn.danger{
-  background:#fee2e2;
-  border-color:#fecaca;
-  color:#991b1b;
-}
-.btn.help{
-  background:#f4f6f8;
-  border-color:#d0d7de;
-  color:#d32f2f;
-}
-
-input[type="text"]{
-  padding:8px 12px;
-  height: var(--input-height);
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  width: 100%;
-  font-size: var(--button-font-size);
-  transition: all 0.2s ease;
-}
-input[type"text"]:focus {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(22, 101, 216, 0.1);
-}
-
-/* Hinweiszeile */
-.hint-row{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:8px 12px;
-  width: 100%;
-}
-#autoHint{
+#tree{
+  background:#f8fafc;
   border:1px solid var(--border);
   border-radius:8px;
-  padding:8px 12px;
-  color:#374151;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:clamp(12px, 1.8vw, 14px);
+  min-height:240px;
+  max-height:60vh;
+  /* Overflow wurde zum Container verschoben */
+  position: relative; /* Wichtig für absolut positionierte Kind-Elemente (Nodes) */
 }
-
-/* Table */
-.table-wrap{padding:12px}
-table{width:100%;border-collapse:separate;border-spacing:0 6px}
-th,td{text-align:left;padding:8px 12px;font-size: 14px;}
-th{position:sticky; top:120px; background:#fff; z-index:1; box-shadow:0 1px 0 var(--border); font-weight: 600;}
-td{border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-tr td:first-child, tr th:first-child{border-left:1px solid var(--border);border-top-left-radius:6px;border-bottom-left-radius:6px}
-tr td:last-child, tr th:last-child{border-right:1px solid var(--border);border-top-right-radius:6px;border-bottom-right-radius:6px}
-mark{background:#fff3bf;padding:0 2px;border-radius:3px}
-
-/* Hinweis unter der Tabelle */
-.table-hint {
-  text-align: center;
-  font-size: 14px;
-  color: #6b7280;
-  margin: 12px 0;
-  padding: 8px;
-  font-style: italic;
-}
-
-/* Version unter der Tabelle - näher am Hinweis */
-.version-under {
-  text-align: right;
-  font-size: 12px;
-  margin: -8px 12px 0;
-  color: #111;
-  padding-right: 8px;
-}
-
-/* Tree panel */
-.tree-panel{padding:8px 12px}
-#tree{background:#f8fafc;border:1px solid var(--border);border-radius:8px;min-height:240px;max-height:60vh;overflow:auto;padding:8px}
 
 /* WICHTIG: Diese Regel entfernen oder auskommentieren, da sie die Schriftgröße überschreibt */
 /* .node text{font-size:11px;fill:#111827} */
 
-/* Dialogs */
-dialog{border:none;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:0;max-width:min(800px, 95vw)}
-dialog::backdrop{background:transparent}
-.dlg-head{padding:12px 16px;background:#f4f6f8;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.dlg-body{padding:16px;max-height:70vh;overflow:auto}
-.dlg-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
-.close-x{border:none;background:transparent;font-size:20px;cursor:pointer}
-.close-x:focus{
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px}
-.form-grid label{font-size:.9rem;color:#374151; font-weight: 500;}
-.form-grid input, .form-grid select{
-  padding:8px 12px;
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  font-size: 14px;
-}
-.form-grid input:focus, .form-grid select:focus {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-  border-color: var(--brand);
-}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap}
-
-/* Version labels */
-.version-ribbon{
-  position: absolute;
-  right: 12px;
-  bottom: 6px;
-  font-size: 12px;
-  color: #fff;
-  opacity: .9;
-  pointer-events: none;
-  text-align: right;
-  z-index: 10;
-  display: block !important;
+/* NEUE REGEL: Stellt sicher, dass Box-Berechnungen konsistent sind */
+.node {
+  box-sizing: border-box; 
 }
 
-/* Responsive Anpassungen */
-@media (max-width: 480px) {
-  .title {
-    font-size: 20px;
-  }
-  
-  .coa {
-    height: 30px;
-  }
-  
-  .button-row {
-    justify-content: space-around;
-  }
-  
-  .btn {
-    flex: 1;
-    min-width: 70px;
-    max-width: 100px;
-    padding: 5px 6px;
-    font-size: 11px;
-    margin: 2px;
-  }
-  
-  .additional-functions {
-    flex-direction: column;
-    gap: 6px;
-  }
-  
-  input[type="text"] {
-    width: 100%;
-    max-width: 240px;
-    padding: 6px 10px;
-    font-size: 13px;
-    order: 1;
-  }
-  
-  #btnReset {
-    order: 2;
-  }
-  
-  #btnHelp {
-    order: 3;
-  }
-  
-  /* Version auf sehr kleinen Geräten */
-  .version-ribbon {
-    position: static;
-    text-align: center;
-    padding: 4px 8px;
-    color: #fff;
-    background: rgba(0,0,0,0.2);
-    margin-top: 4px;
-  }
-  
-  .version-under {
-    margin: -4px 8px 0;
-    text-align: center;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .tree-panel {
-    padding: 4px 8px;
-  }
-  
-  #tree {
-    min-height: 200px;
-    max-height: 50vh;
-  }
+
+/* ... restliche Styles bis zum Druck ... */
+
+
+/* Print styles for better printing experience - ÜBERARBEITET */
+/* Diese Klasse muss per JS vor dem Aufruf von html2canvas auf den body gesetzt werden */
+body.printing-mode {
+    background: white !important;
+    font-size: 10pt; /* Kleinere Schrift für den Druck */
+    color: #000 !important;
 }
 
-@media (max-width: 768px) {
-  .title {
-    font-size: 24px;
-  }
-  
-  .coa {
-    height: 30px;
-  }
-  
-  .button-row {
-    gap: 5px;
-  }
-  
-  .btn {
-    padding: 6px 8px;
-    font-size: 12px;
-    min-width: 80px;
-  }
-  
-  .search-container {
-    order: 1;
-    max-width: 100%;
-    margin: 6px 0;
-  }
-  
-  .additional-functions {
-    flex-wrap: wrap;
-  }
-  
-  input[type="text"] {
-    max-width: 240px;
-  }
-  
-  .tree-panel {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  #tree {
-    min-height: 300px;
-    transform-origin: top left;
-  }
+/* Versteckt alles, was nicht gedruckt werden soll */
+.printing-mode .ribbon,
+.printing-mode .toolbar,
+.printing-mode .hint-row,
+.printing-mode .table-hint,
+.printing-mode .version-under,
+.printing-mode dialog,
+.printing-mode .table-wrap:not(.print-this), /* Verstecke Tabelle, außer sie soll gedruckt werden */
+.printing-mode .tree-panel:not(.print-this) { /* Verstecke Baum, außer er soll gedruckt werden */
+    display: none !important;
 }
 
-@media (max-width: 1024px) {
-  .button-row {
-    gap: 6px;
-  }
-  
-  .btn {
-    padding: 7px 10px;
-    font-size: 13px;
-    min-width: 90px;
-  }
+/* Stellt sicher, dass das zu druckende Element den ganzen Platz einnimmt */
+.printing-mode .print-this {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-height: none !important; /* Wichtig, um Höhenbeschränkungen aufzuheben */
 }
 
-/* Mobile Tree Optimization */
-@media (max-width: 768px) {
-  .tree-panel {
-    touch-action: manipulation;
-  }
-  
-  #tree {
-    overflow: visible;
-  }
-  
-  #tree svg {
-    min-width: 800px;
-  }
+/* Spezifische Stile für den Tabellendruck */
+.printing-mode .table-wrap.print-this table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
 }
 
-/* Help body styling */
-.help-body {
-  line-height: 1.6;
+.printing-mode .table-wrap.print-this th,
+.printing-mode .table-wrap.print-this td {
+    border: 1px solid #ccc !important;
+    padding: 4pt 6pt !important;
 }
 
-.help-body h3 {
-  color: var(--brand);
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+/* Spezifische Stile für den Baum-Druck */
+.printing-mode .tree-panel.print-this #treeContainer {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
 }
 
-.help-body ul {
-  padding-left: 1.5em;
-  margin-bottom: 1em;
+.printing-mode .tree-panel.print-this #tree {
+    /* Wichtig: Breite so setzen, dass der ganze Baum Platz hat. Muss evtl. per JS angepasst werden. */
+    width: fit-content !important; 
+    height: auto !important;
+    overflow: visible !important;
+    max-height: none !important;
+    border: none !important;
 }
 
-.help-body li {
-  margin-bottom: 0.5em;
-}
-
-/* Print styles for better printing experience */
-@media print {
-    body.printing-mode {
-        margin: 0;
-        padding: 0;
-        background: white !important;
-    }
-
-    body.printing-table .ribbon,
-    body.printing-table .toolbar,
-    body.printing-table .hint-row,
-    body.printing-table .table-hint,
-    body.printing-table .version-under,
-    body.printing-table .tree-panel,
-    body.printing-table .additional-functions,
-    body.printing-table .search-container,
-    body.printing-table .btn,
-    body.printing-table dialog {
-        display: none !important;
-    }
-
-    body.printing-tree .ribbon,
-    body.printing-tree .toolbar,
-    body.printing-tree .hint-row,
-    body.printing-tree .table-hint,
-    body.printing-tree .version-under,
-    body.printing-tree .table-wrap,
-    body.printing-tree .additional-functions,
-    body.printing-tree .search-container,
-    body.printing-tree .btn,
-    body.printing-tree dialog {
-        display: none !important;
-    }
-
-    body.printing-mode .app {
-        max-width: none !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-    }
-
-    body.printing-table .table-wrap {
-        display: block !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        width: 100% !important;
-        overflow: visible !important;
-    }
-
-    body.printing-table table {
-        width: 100% !important;
-        font-size: 10pt !important;
-        border-spacing: 0 !important;
-        border-collapse: collapse !important;
-        page-break-inside: auto !important;
-    }
-
-    body.printing-table th,
-    body.printing-table td {
-        padding: 4pt 6pt !important;
-        font-size: 9pt !important;
-        border: 1px solid #ccc !important;
-        page-break-inside: avoid !important;
-    }
-
-    body.printing-table tr {
-        page-break-inside: avoid !important;
-        page-break-after: auto !important;
-    }
-
-    body.printing-tree .tree-panel {
-        display: block !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        border: none !important;
-        background: white !important;
-        page-break-before: always !important;
-    }
-
-    body.printing-tree #treeContainer {
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        max-height: none !important;
-        padding: 0 !important;
-        border: none !important;
-        background: white !important;
-        overflow: visible !important;
-    }
-
-    body.printing-tree #tree {
-        width: 100% !important;
-        height: auto !important;
-        max-width: 100% !important;
-        transform: none !important;
-    }
-
-    /* Header für Druckausgabe */
-    body.printing-mode::before {
-        content: "Wappenringe der Familie GEPPERT";
-        display: block;
-        text-align: center;
-        font-size: 16pt;
-        font-weight: bold;
-        margin-bottom: 12pt;
-        padding-bottom: 6pt;
-        border-bottom: 2px solid #333;
-    }
-
-    /* Footer für Druckausgabe */
-    body.printing-mode::after {
-        content: "Druckdatum: " attr(data-print-date);
-        display: block;
-        text-align: center;
-        font-size: 9pt;
-        margin-top: 12pt;
-        padding-top: 6pt;
-        border-top: 1px solid #ccc;
-        color: #666;
-    }
-
-    /* Seitenumbrüche optimieren */
-    @page {
-        margin: 1cm;
-        size: A4;
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-        page-break-after: avoid;
-    }
-
-    table, svg {
-        page-break-inside: avoid;
-    }
-
-    tr, .node {
-        page-break-inside: avoid;
-        page-break-after: auto;
-    }
-
-    /* Bessere Lesbarkeit beim Druck */
-    body.printing-mode {
-        font-size: 11pt;
-        line-height: 1.4;
-        color: #000 !important;
-    }
-
-    /* Farben für Generationen beim Druck (graustufen-optimiert) */
-    body.printing-table tr[style*="background-color: var(--gen1-color)"],
-    body.printing-table tr[style*="background-color: #e8f5e8"] {
-        background-color: #f0f0f0 !important;
-    }
-
-    body.printing-table tr[style*="background-color: var(--gen2-color)"],
-    body.printing-table tr[style*="background-color: #e3f2fd"] {
-        background-color: #e8e8e8 !important;
-    }
-
-    body.printing-table tr[style*="background-color: var(--gen3-color)"],
-    body.printing-table tr[style*="background-color: #f3e5f5"] {
-        background-color: #f0e8f0 !important;
-    }
-}
-
-/* Spezielle Optimierungen für den Baum-Druck */
-body.printing-tree .node text {
+/* Verbessert die Lesbarkeit des Baums im erzeugten PDF */
+.printing-mode .node text {
     font-size: 10pt !important;
     fill: #000 !important;
 }
 
-body.printing-tree .node rect {
+.printing-mode .node rect, .printing-mode .node circle {
     stroke: #000 !important;
-    fill: #f9f9f9 !important;
+    fill: #fff !important; /* Weißer Hintergrund für Kontrast */
 }
 
-body.printing-tree .connections line {
-    stroke: #666 !important;
-    stroke-width: 1.5 !important;
+.printing-mode .link { /* Falls die Verbindungslinien eine Klasse 'link' haben */
+    stroke: #333 !important;
+    stroke-width: 1.5px !important;
 }
