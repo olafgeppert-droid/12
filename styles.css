@@ -142,9 +142,9 @@ input[type"text"]:focus {
 }
 
 /* Table */
-.table-wrap{padding:12px}
+.table-wrap{padding:12px; overflow-x: auto;}
 table{width:100%;border-collapse:separate;border-spacing:0 6px}
-th,td{text-align:left;padding:8px 12px;font-size: 14px;}
+th,td{text-align:left;padding:8px 12px;font-size: 14px; white-space: nowrap;}
 th{position:sticky; top:120px; background:#fff; z-index:1; box-shadow:0 1px 0 var(--border); font-weight: 600;}
 td{border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 tr td:first-child, tr th:first-child{border-left:1px solid var(--border);border-top-left-radius:6px;border-bottom-left-radius:6px}
@@ -175,7 +175,7 @@ mark{background:#fff3bf;padding:0 2px;border-radius:3px}
 #treeContainer {
   width: 100%;
   height: 70vh;
-  overflow: hidden; /* Scrollen wird per JS (Pan) gesteuert */
+  overflow: hidden;
   cursor: grab;
   position: relative;
   background:#f8fafc;
@@ -186,6 +186,7 @@ mark{background:#fff3bf;padding:0 2px;border-radius:3px}
   width: 100%;
   height: 100%;
 }
+.node { cursor: pointer; }
 
 /* Dialogs */
 dialog{border:none;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:0;max-width:min(800px, 95vw)}
@@ -199,13 +200,13 @@ dialog::backdrop{background:rgba(0,0,0,0.2)}
   outline-offset: 2px;
 }
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-.form-grid label{font-size:.9rem;color:#374151; font-weight: 500; display:flex; flex-direction:column; gap: 4px;}
+.form-grid label{font-size:.9rem;color:#374151; font-weight: 500;}
 .form-grid input, .form-grid select{
+  width: 100%;
   padding:8px 12px;
   border:1px solid #d1d5db;
   border-radius:6px;
   font-size: 14px;
-  width: 100%;
 }
 .form-grid input:focus, .form-grid select:focus {
   outline: 2px solid var(--brand);
@@ -222,37 +223,39 @@ dialog::backdrop{background:rgba(0,0,0,0.2)}
   .btn { padding: 6px 8px; font-size: 12px; min-width: 80px; }
   .search-container { order: 1; max-width: 100%; margin: 6px 0; }
   .additional-functions { flex-wrap: wrap; }
-  input[type="text"] { max-width: 240px; }
   .form-grid { grid-template-columns: 1fr; }
 }
 
-/* Print styles */
+/* === KORRIGIERTE DRUCK-STILE === */
+/* Diese Klasse wird per JS vor dem Drucken auf den Body gesetzt */
 body.printing-mode {
     background: white !important;
 }
+/* Versteckt alles außer dem speziellen Druck-Container */
 body.printing-mode > *:not(.print-container) {
     display: none !important;
 }
+/* Dieser Container wird temporär erstellt, um das zu druckende Element zu halten */
 .print-container {
     display: block !important;
     position: absolute;
-    top: 0; left: 0;
-    width: auto !important;
+    top: 0;
+    left: 0;
+    width: auto !important; /* Passt sich der Breite des Inhalts an */
     height: auto !important;
-    margin: 0 !important;
-    padding: 20px !important;
-    box-shadow: none !important;
-    border: none !important;
     background: white !important;
+    padding: 20px; /* Rand für das PDF */
+    z-index: 9999;
 }
-.printing-mode #treeContainer {
-    overflow: visible !important;
+/* Spezifische Anpassungen für das Element im Druck-Modus */
+.print-container .table-wrap, .print-container .tree-panel {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.print-container #treeContainer {
     height: auto !important;
-}
-.printing-mode table {
-    font-size: 9pt;
-}
-.printing-mode th, .printing-mode td {
-    border: 1px solid #ccc !important;
-    padding: 4px;
+    max-height: none !important;
+    overflow: visible !important;
 }

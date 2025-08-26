@@ -5,18 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
 
-  <!-- SKRIPTE WERDEN HIER IM HEAD GELADEN, WIE IN IHRER ORIGINALDATEI -->
+  <!-- Skripte werden im Head geladen und warten auf das DOM -->
   <script src="version.js"></script>
   <script src="app.js"></script>
 
-  <!-- Redirect-Skript -->
-  <script>
-    if (!sessionStorage.getItem('welcomeShown')) {
-      sessionStorage.setItem('welcomeShown', 'true');
-      window.location.href = 'welcome.html';
-    }
-  </script>
-  
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css"/>
   <style>
@@ -33,6 +25,14 @@
   </style>
 </head>
 <body>
+  <!-- Redirect-Skript muss früh ausgeführt werden -->
+  <script>
+    if (!sessionStorage.getItem('welcomeShown')) {
+      sessionStorage.setItem('welcomeShown', 'true');
+      window.location.href = 'welcome.html';
+    }
+  </script>
+
   <div class="app">
     <header class="ribbon">
       <div class="title-wrap">
@@ -50,8 +50,8 @@
           <button class="btn" id="btnStats" title="Statistiken">📊 Statistiken</button>
         </div>
         <div class="button-row additional-functions">
-          <button class="btn" id="btnUndo" title="Rückgängig">↶ Rückgängig</button>
-          <button class="btn" id="btnRedo" title="Wiederholen">↷ Wiederholen</button>
+          <button class="btn" id="btnUndo" title="Rückgängig" disabled>↶ Rückgängig</button>
+          <button class="btn" id="btnRedo" title="Wiederholen" disabled>↷ Wiederholen</button>
           <button class="btn danger" id="btnReset" title="Alle Daten löschen">⛔ Reset</button>
           <div class="search-container">
             <input id="search" type="text" placeholder="Personen suchen (Name/Code)">
@@ -61,7 +61,7 @@
       </div>
       <div class="hint-row">
         <div id="autoHint" title="Sicherungshinweis">
-          Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export als JSON-Datei in deinem Backup-Verzeichnis zu sichern.
+          Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
         </div>
       </div>
       <span id="versionRibbon" class="version-ribbon" aria-label="Softwareversion"></span>
@@ -78,123 +78,59 @@
       </table>
     </section>
     
-    <div class="table-hint">
-      Bearbeiten eines Eintrags durch Doppelklick auf die Person
-    </div>
-    
+    <div class="table-hint">Bearbeiten eines Eintrags durch Doppelklick auf die Person</div>
     <div id="versionUnderTable" class="version-under" role="note"></div>
 
     <section class="tree-panel">
-      <div id="treeContainer">
-        <div id="tree"></div>
-      </div>
+      <div id="treeContainer"><div id="tree"></div></div>
     </section>
   </div>
 
+  <!-- Dialoge -->
   <dialog id="dlgNew">
     <form method="dialog" id="formNew">
-      <div class="dlg-head">
-        <strong>Neue Person</strong>
-        <button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button>
-      </div>
-      <div class="dlg-body">
-        <div class="form-grid">
-          <label> Name *
-            <input id="pName" autocomplete="off" required>
-          </label>
-          <label> Geburtsdatum (TT.MM.JJJJ) *
-            <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required>
-          </label>
-          <label> Geburtsort *
-            <input id="pPlace" required>
-          </label>
-          <label> Geschlecht *
-            <select id="pGender" required>
-              <option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option>
-            </select>
-          </label>
-          <label> Eltern-Code
-            <input id="pParent" placeholder="z. B. 1A">
-          </label>
-          <label> Partner-Code
-            <input id="pPartner" placeholder="z. B. 1Ax">
-          </label>
-          <label> Geerbt von Code
-            <input id="pInherited" placeholder="z. B. 1">
-          </label>
-          <label> Kommentar
-            <input id="pNote">
-          </label>
-        </div>
-        <div style="margin-top: 12px; font-size: 12px; color: #666;">
-          * Pflichtfelder (Eltern-Code ist nur für Kinder erforderlich)
-        </div>
-      </div>
-      <div class="dlg-actions">
-        <button value="cancel" type="submit" formnovalidate>Abbrechen</button>
-        <button id="saveNew" value="default" type="submit">Speichern</button>
-      </div>
+      <div class="dlg-head"><strong>Neue Person</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button></div>
+      <div class="dlg-body"><div class="form-grid">
+          <label>Name *<input id="pName" autocomplete="off" required></label>
+          <label>Geburtsdatum (TT.MM.JJJJ) *<input id="pBirth" inputmode="numeric" placeholder="z.B. 04.12.2000" required></label>
+          <label>Geburtsort *<input id="pPlace" required></label>
+          <label>Geschlecht *<select id="pGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
+          <label>Eltern-Code<input id="pParent" placeholder="z.B. 1A"></label>
+          <label>Partner-Code<input id="pPartner" placeholder="z.B. 1Ax"></label>
+          <label>Geerbt von Code<input id="pInherited" placeholder="z.B. 1"></label>
+          <label>Kommentar<input id="pNote"></label>
+      </div></div>
+      <div class="dlg-actions"><button value="cancel" type="submit" formnovalidate>Abbrechen</button><button id="saveNew" value="default" type="submit">Speichern</button></div>
     </form>
   </dialog>
 
   <dialog id="dlgEdit">
     <form method="dialog" id="formEdit">
-      <div class="dlg-head">
-        <strong>Person ändern</strong>
-        <button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button>
-      </div>
-      <div class="dlg-body">
-        <div class="form-grid">
-          <label> Name * <input id="eName" required></label>
-          <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
-          <label> Geburtsort * <input id="ePlace" required></label>
-          <label> Geschlecht *
-            <select id="eGender" required>
-              <option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option>
-            </select>
-          </label>
-          <label> Eltern-Code <input id="eParent"></label>
-          <label> Partner-Code <input id="ePartner"></label>
-          <label> Geerbt von Code <input id="eInherited"></label>
-          <label> Kommentar <input id="eNote"></label>
-        </div>
-        <div style="margin-top: 12px; font-size: 12px; color: #666;">
-          * Pflichtfelder
-        </div>
-      </div>
-      <div class="dlg-actions">
-        <button value="cancel" type="submit" formnovalidate>Abbrechen</button>
-        <button id="saveEdit" value="default" type="submit">Speichern</button>
-      </div>
+      <div class="dlg-head"><strong>Person ändern</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button></div>
+      <div class="dlg-body"><div class="form-grid">
+          <label>Name * <input id="eName" required></label>
+          <label>Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
+          <label>Geburtsort * <input id="ePlace" required></label>
+          <label>Geschlecht *<select id="eGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
+          <label>Eltern-Code <input id="eParent"></label>
+          <label>Partner-Code <input id="ePartner"></label>
+          <label>Geerbt von Code <input id="eInherited"></label>
+          <label>Kommentar <input id="eNote"></label>
+      </div></div>
+      <div class="dlg-actions"><button value="cancel" type="submit" formnovalidate>Abbrechen</button><button id="saveEdit" value="default" type="submit">Speichern</button></div>
     </form>
   </dialog>
 
   <dialog id="dlgPrint">
     <div class="dlg-head"><strong>Drucken</strong><button class="close-x" onclick="this.closest('dialog').close()" aria-label="Schließen">×</button></div>
-    <div class="dlg-body">
-      <p>Bitte auswählen, was gedruckt werden soll:</p>
-      <div class="btn-row">
-        <button class="btn" id="btnPrintTable">🖨️ Tabelle drucken</button>
-        <button class="btn" id="btnPrintTree">🖨️ Baum drucken</button>
-      </div>
-    </div>
-    <div class="dlg-actions">
-      <button onclick="this.closest('dialog').close()">Schließen</button>
-    </div>
+    <div class="dlg-body"><p>Bitte auswählen, was gedruckt werden soll:</p><div class="btn-row"><button class="btn" id="btnPrintTable">🖨️ Tabelle drucken</button><button class="btn" id="btnPrintTree">🖨️ Baum drucken</button></div></div>
+    <div class="dlg-actions"><button onclick="this.closest('dialog').close()">Schließen</button></div>
   </dialog>
 
   <dialog id="dlgExport">
     <div class="dlg-head"><strong>Export</strong><button class="close-x" onclick="this.closest('dialog').close()" aria-label="Schließen">×</button></div>
-    <div class="dlg-body">
-      <p>Format wählen. Tipp: Diese Exporte dienen auch als <b>Backup</b>.</p>
-      <div class="btn-row">
-        <button class="btn" id="btnExportJSON">📄 JSON exportieren</button>
-        <button class="btn" id="btnExportCSV">📄 CSV exportieren</button>
-      </div>
-    </div>
-    <div class="dlg-actions">
-      <button onclick="this.closest('dialog').close()">Schließen</button>
-    </div>
+    <div class="dlg-body"><p>Format wählen. Tipp: Dient auch als <b>Backup</b>.</p><div class="btn-row"><button class="btn" id="btnExportJSON">📄 JSON exportieren</button><button class="btn" id="btnExportCSV">📄 CSV exportieren</button></div></div>
+    <div class="dlg-actions"><button onclick="this.closest('dialog').close()">Schließen</button></div>
   </dialog>
 
   <dialog id="dlgStats">
@@ -211,37 +147,25 @@
 
   <dialog id="dlgImportError">
     <div class="dlg-head"><strong>Import-Fehler</strong><button class="close-x" onclick="this.closest('dialog').close()" aria-label="Schließen">×</button></div>
-    <div class="dlg-body">
-      <p>Fehlerhafte Daten können nicht importiert werden. Prüfe den Dateiinhalt.</p>
-      <p>Pflichtfelder sind: Name, Geschlecht, Geburtsdatum, und Geburtsort</p>
-    </div>
-    <div class="dlg-actions">
-      <button onclick="this.closest('dialog').close()">Schließen</button>
-    </div>
+    <div class="dlg-body"><p>Fehlerhafte Daten können nicht importiert werden.</p></div>
+    <div class="dlg-actions"><button onclick="this.closest('dialog').close()">Schließen</button></div>
   </dialog>
 
+  <!-- Externe Bibliotheken werden am Ende geladen -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
+  <!-- Das doppelte Laden von app.js/version.js wurde entfernt. -->
   <script>
-    (function(){
-      function setVersion() {
-        if (typeof APP_VERSION !== 'undefined') {
-          const r = document.getElementById('versionRibbon');
-          const u = document.getElementById('versionUnderTable');
-          if(r) r.textContent = 'Softwareversion ' + APP_VERSION;
-          if(u) u.textContent = 'Softwareversion ' + APP_VERSION;
-        } else {
-          setTimeout(setVersion, 50);
-        }
+    // Version wird nach dem Laden des DOMs gesetzt, um sicherzustellen, dass app.js bereit ist
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof APP_VERSION !== 'undefined') {
+        const r = document.getElementById('versionRibbon');
+        const u = document.getElementById('versionUnderTable');
+        if(r) r.textContent = 'Softwareversion ' + APP_VERSION;
+        if(u) u.textContent = 'Softwareversion ' + APP_VERSION;
       }
-      // Warten bis das DOM bereit ist, bevor die Version gesetzt wird
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setVersion);
-      } else {
-        setVersion();
-      }
-    })();
+    });
   </script>
 </body>
 </html>
