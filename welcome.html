@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Willkommen - Wappenringe Familie GEPPERT</title>
     
+    <!-- PDF.js Bibliothek einbinden -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     
+    <!-- Zentrale Version laden -->
     <script src="version.js"></script>
     
     <style>
@@ -338,7 +340,7 @@
 <body>
     <div class="welcome-container">
         <div class="family-crest">
-            <img src="wappen.png" alt="Wappen der Familie Geppert">
+            <img src="wappen.png" alt="Familienwappen Geppert" onerror="this.style.display='none'">
         </div>
         
         <h1>Willkommen im Datenbankprogramm für die Wappenringe der Familie GEPPERT</h1>
@@ -472,7 +474,7 @@
 
         // Tastatur-Navigation
         document.addEventListener('keydown', function(e) {
-             if (document.getElementById('pdf-viewer').style.display === 'block') {
+            if (document.getElementById('pdf-viewer').style.display === 'block') {
                 if (e.key === 'ArrowLeft') {
                     prevPage();
                 } else if (e.key === 'ArrowRight') {

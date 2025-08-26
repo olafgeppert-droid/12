@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
 
-  <script src="version.js"></script>
+  <!-- Vor den anderen Scripts einfügen -->
+<script src="version.js"></script>
 <script src="app.js"></script>
 
 <script>
@@ -17,6 +18,7 @@
   })();
 </script>
   
+  <!-- Redirect-Code zur Welcome-Seite -->
   <script>
     // Prüfen ob wir von der Welcome-Seite kommen
     if (!sessionStorage.getItem('welcomeShown')) {
@@ -24,6 +26,8 @@
       window.location.href = 'welcome.html';
     }
   </script>
+  <!-- Ende Redirect-Code -->
+  
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css"/>
   <style>
@@ -211,7 +215,7 @@
   <dialog id="dlgPrint">
     <div class="dlg-head"><strong>Drucken</strong><button class="close-x" onclick="this.closest('dialog').close()" aria-label="Schließen">×</button></div>
     <div class="dlg-body">
-      <p>Bitte auswählen, was gedruckt werden soll:</p>
+      <p>Bitte auswählen, что gedruckt werden soll:</p>
       <div class="btn-row">
         <button class="btn" id="btnPrintTable">🖨️ Tabelle drucken</button>
         <button class="btn" id="btnPrintTree">🖨️ Baum drucken</button>
@@ -262,6 +266,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
+  <!-- Version zuerst laden -->
   <script src="version.js"></script>
   <script src="app.js"></script>
 

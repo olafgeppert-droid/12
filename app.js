@@ -296,12 +296,14 @@ function renderTable() {
 function renderTree() {
     computeRingCodes();
     const el = $("#tree");
+    if (!el) return;
     el.innerHTML = "";
 
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     el.appendChild(svg);
 
     const genColors = {
@@ -325,26 +327,36 @@ function renderTree() {
         }
     });
 
-    const boxWidth = 240;
+    let maxBoxWidth = 220;
+    people.forEach(person => {
+        const text = `${person.Code} / ${person.Name || person.Code}`;
+        const estimatedWidth = text.length * 9 + 50;
+        if (estimatedWidth > maxBoxWidth) maxBoxWidth = Math.min(estimatedWidth, 260);
+    });
+
+    const boxWidth = maxBoxWidth;
     const boxHeight = 100;
     const partnerGap = 40;
-    const horizontalSpacing = 100;
     const verticalSpacing = 220;
+    const horizontalSpacing = 120;
 
     const positions = new Map();
     const generations = Object.keys(byGeneration).sort((a, b) => a - b);
-    let totalHeight = 0;
+
+    // Berechne die maximale Breite pro Generation
+    const generationWidths = {};
+    let totalSvgWidth = 0;
+    let totalSvgHeight = 0;
 
     generations.forEach((gen, genIndex) => {
         const persons = byGeneration[gen];
-        let y = 140 + genIndex * verticalSpacing;
+        const y = 140 + genIndex * verticalSpacing;
 
         const groupedPersons = [];
         const processed = new Set();
-        persons.sort((a, b) => a.Code.localeCompare(b.Code));
 
-        for (const person of persons) {
-            if (processed.has(person.Code)) continue;
+        persons.forEach(person => {
+            if (processed.has(person.Code)) return;
 
             let partnerCodes = [];
             if (person.PartnerCode) {
@@ -362,38 +374,68 @@ function renderTree() {
                 groupedPersons.push([person]);
                 processed.add(person.Code);
             }
-        }
-        
-        let currentX = 100;
-        let startY = y;
-        let maxRowWidth = 0;
-        
-        for (const group of groupedPersons) {
-            const groupWidth = group.length === 2 ? (boxWidth * 2 + partnerGap) : boxWidth;
-            if (currentX + groupWidth + horizontalSpacing > 2600) {
-                currentX = 100;
-                y += boxHeight + verticalSpacing / 2;
+        });
+
+        // Berechne benötigte Breite für diese Generation
+        let genWidth = 200; // Start mit Margin
+        groupedPersons.forEach(group => {
+            genWidth += group.length === 2 ? (boxWidth * 2 + partnerGap + horizontalSpacing) : (boxWidth + horizontalSpacing);
+        });
+
+        generationWidths[gen] = genWidth;
+        totalSvgWidth = Math.max(totalSvgWidth, genWidth);
+        totalSvgHeight = y + boxHeight + 100;
+    });
+
+    // Setze die ViewBox basierend auf den berechneten Dimensionen
+    svg.setAttribute("viewBox", `0 0 ${totalSvgWidth} ${totalSvgHeight}`);
+    svg.setAttribute("width", totalSvgWidth);
+    svg.setAttribute("height", totalSvgHeight);
+
+    generations.forEach((gen, genIndex) {
+        const persons = byGeneration[gen];
+        const y = 140 + genIndex * verticalSpacing;
+
+        const groupedPersons = [];
+        const processed = new Set();
+
+        persons.forEach(person => {
+            if (processed.has(person.Code)) return;
+
+            let partnerCodes = [];
+            if (person.PartnerCode) {
+                const partnerKey = [person.Code, person.PartnerCode].sort().join('-');
+                partnerCodes = partnerGroups.get(partnerKey) || [];
             }
-            
+
+            if (partnerCodes.length > 0) {
+                const partnerGroup = partnerCodes.map(code =>
+                    persons.find(p => p.Code === code)
+                ).filter(Boolean);
+                groupedPersons.push(partnerGroup);
+                partnerCodes.forEach(code => processed.add(code));
+            } else {
+                groupedPersons.push([person]);
+                processed.add(person.Code);
+            }
+        });
+
+        let currentX = 100; // Start mit Margin
+
+        groupedPersons.forEach((group) => {
             if (group.length === 2) {
-                const p1 = group[0];
-                const p2 = group[1];
-                positions.set(p1.Code, { x: currentX + boxWidth / 2, y: y, person: p1 });
-                positions.set(p2.Code, { x: currentX + boxWidth + partnerGap + boxWidth / 2, y: y, person: p2 });
+                const partner1 = group[0];
+                const partner2 = group[1];
+
+                positions.set(partner1.Code, { x: currentX + boxWidth / 2, y: y, person: partner1 });
+                positions.set(partner2.Code, { x: currentX + boxWidth + partnerGap + boxWidth / 2, y: y, person: partner2 });
                 currentX += boxWidth * 2 + partnerGap + horizontalSpacing;
             } else {
-                const p = group[0];
-                positions.set(p.Code, { x: currentX + boxWidth / 2, y: y, person: p });
+                const person = group[0];
+                positions.set(person.Code, { x: currentX + boxWidth / 2, y: y, person: person });
                 currentX += boxWidth + horizontalSpacing;
             }
-            maxRowWidth = Math.max(maxRowWidth, currentX);
-        }
-        
-        // Update Y for next generation
-        if (y > startY) {
-            totalHeight += (y - startY);
-            generations[genIndex+1] = { y: generations[genIndex+1] + (y - startY) }; // Simple placeholder to add vertical space
-        }
+        });
     });
 
     const nodesGroup = document.createElementNS(svgNS, "g");
@@ -529,12 +571,11 @@ function renderTree() {
         }
     });
 
-    generations.forEach((gen, genIndex) => {
-        const y = positions.get(byGeneration[gen][0].Code)?.y || 0; // Get y from first person in group
+    generations.forEach((gen, genIndex) {
+        const y = 140 + genIndex * verticalSpacing - 20;
         const labelText = document.createElementNS(svgNS, "text");
         labelText.setAttribute("x", "40");
-        labelText.setAttribute("y", y + boxHeight/2);
-        labelText.setAttribute("dominant-baseline", "middle");
+        labelText.setAttribute("y", y);
         labelText.setAttribute("font-size", "30px");
         labelText.setAttribute("font-weight", "bold");
         labelText.setAttribute("fill", "#374151");
@@ -586,22 +627,10 @@ function renderTree() {
     defs.appendChild(filter);
     svg.appendChild(defs);
 
-    setTimeout(() => adjustTreeViewport(svg), 100);
-}
-
-function adjustTreeViewport(svg) {
-    try {
-        const bbox = svg.getBBox();
-        if (bbox.width > 0 && bbox.height > 0) {
-            const padding = 100;
-            svg.setAttribute("viewBox",
-                `${bbox.x - padding} ${bbox.y - padding} 
-                 ${bbox.width + 2 * padding} ${bbox.height + 2 * padding}`
-            );
-        }
-    } catch (e) {
-        console.log("Viewport-Anpassung nicht möglich:", e);
-    }
+    // Container für Scrollbarkeit anpassen
+    const treeContainer = $("#tree");
+    treeContainer.style.overflow = "auto";
+    treeContainer.style.maxHeight = "70vh";
 }
 
 function openNew() {
@@ -675,7 +704,7 @@ function openEdit(code) {
     $("#dlgEdit").showModal();
 }
 
-function saveEditFn() {
+function saveEdit() {
     const p = people.find(x => x.Code === editCode);
     if (!p) return;
 
@@ -684,6 +713,9 @@ function saveEditFn() {
     const place = $("#ePlace").value.trim();
     const gender = $("#eGender").value;
     const parent = normalizePersonCode($("#eParent").value.trim());
+    const partner = normalizePersonCode($("#ePartner").value.trim());
+    const inherited = normalizePersonCode($("#eInherited").value.trim());
+    const note = $("#eNote").value.trim();
 
     if (!name || !place || !gender) {
         alert(messages.requiredFields);
@@ -701,155 +733,411 @@ function saveEditFn() {
     p.BirthPlace = place;
     p.Gender = gender;
     p.ParentCode = parent;
-    p.PartnerCode = normalizePersonCode($("#ePartner").value.trim());
-    p.InheritedFrom = normalizePersonCode($("#eInherited").value.trim());
-    p.Note = $("#eNote").value.trim();
-
+    p.PartnerCode = partner;
+    p.InheritedFrom = inherited;
+    p.Note = note;
     p.Gen = computeGenFromCode(p.Code);
+
     saveState();
     updateUI();
     $("#dlgEdit").close();
 }
 
 function deletePerson() {
-    const id = prompt("Bitte Namen oder Personen-Code der zu löschenden Person eingeben:");
-    if (!id) return;
-    const idx = people.findIndex(p => p.Code === id || (p.Name || "").toLowerCase() === id.toLowerCase());
-    if (idx < 0) { alert(messages.personNotFound); return; }
-    const code = people[idx].Code;
-    people.splice(idx, 1);
-    people.forEach(p => {
-        if (p.ParentCode === code) p.ParentCode = "";
-        if (p.PartnerCode === code) p.PartnerCode = "";
-        if (p.InheritedFrom === code) p.InheritedFrom = "";
+    const code = prompt("Bitte Code der zu löschenden Person eingeben:");
+    if (!code) return;
+    const p = people.find(x => x.Code === normalizePersonCode(code));
+    if (!p) {
+        alert(messages.personNotFound);
+        return;
+    }
+    if (!confirm(`Soll "${p.Name}" (${p.Code}) wirklich gelöscht werden?`)) return;
+    
+    people = people.filter(x => x.Code !== p.Code);
+    
+    // Entferne Referenzen auf die gelöschte Person
+    people.forEach(person => {
+        if (person.ParentCode === p.Code) person.ParentCode = "";
+        if (person.PartnerCode === p.Code) person.PartnerCode = "";
+        if (person.InheritedFrom === p.Code) person.InheritedFrom = "";
     });
+    
     saveState();
     updateUI();
 }
 
-function doImport(file) {
-    const r = new FileReader();
-    r.onload = () => {
-        try {
-            let data;
-            if (file.name.toLowerCase().endsWith('.csv')) {
-                data = parseCSV(r.result);
-            } else {
-                data = JSON.parse(r.result);
-            }
-
-            if (!Array.isArray(data)) throw new Error("Format");
-
-            const validData = [];
-            let hasErrors = false;
-
-            for (const item of data) {
-                if (item && typeof item === 'object' && item.Code && typeof item.Code === 'string') {
-                    if (!validateRequiredFields(item) || (item.Birth && !validateBirthDate(item.Birth))) {
-                        hasErrors = true;
-                        break;
-                    }
-                    validData.push(item);
+function importData() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,.csv";
+    input.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                let data;
+                if (file.name.toLowerCase().endsWith('.csv')) {
+                    data = parseCSV(e.target.result);
+                } else {
+                    data = JSON.parse(e.target.result);
                 }
-            }
+                
+                if (!Array.isArray(data)) throw new Error("Daten müssen ein Array sein");
+                if (data.length === 0) throw new Error("Keine Daten");
+                
+                // Validiere alle Datensätze
+                const validData = [];
+                let hasErrors = false;
+                
+                for (const item of data) {
+                    if (item && typeof item === 'object' && item.Code && typeof item.Code === 'string') {
+                        if (!validateRequiredFields(item) || (item.Birth && !validateBirthDate(item.Birth))) {
+                            hasErrors = true;
+                            break;
+                        }
+                        validData.push(item);
+                    }
+                }
 
-            if (hasErrors || validData.length === 0) {
+                if (hasErrors || validData.length === 0) {
+                    $("#dlgImportError").showModal();
+                    return;
+                }
+
+                people = validData;
+                postLoadFixups();
+                saveState();
+                updateUI();
+                alert(`Erfolgreich ${data.length} Personen importiert.`);
+            } catch (error) {
+                console.error("Import-Fehler:", error);
                 $("#dlgImportError").showModal();
-                return;
             }
-
-            people = validData;
-            postLoadFixups();
-            saveState(false);
-            updateUI();
-        } catch (e) {
-            console.error("Import error:", e);
-            $("#dlgImportError").showModal();
-        }
-    };
-    r.readAsText(file);
+        };
+        reader.readAsText(file);
+    });
+    input.click();
 }
 
 function parseCSV(csvText) {
-    const lines = csvText.split('\n').filter(line => line.trim());
+    const lines = csvText.split(/\r?\n/).filter(line => line.trim());
     if (lines.length < 2) return [];
     const headers = lines[0].split(';').map(h => h.trim());
     const result = [];
-
+    
     for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(';').map(v => v.trim());
+        if (values.length !== headers.length) continue;
+        
         const obj = {};
-        for (let j = 0; j < headers.length; j++) {
-            if (j < values.length) obj[headers[j]] = values[j] || '';
-        }
-        if (obj.Code) result.push(obj);
+        headers.forEach((header, index) => {
+            obj[header] = values[index] || '';
+        });
+        result.push(obj);
     }
     return result;
 }
 
-function exportJSON() {
-    const blob = new Blob([JSON.stringify(people, null, 2)], { type: "application/json" });
-    shareOrDownload("familie.json", blob);
-}
-
-function exportCSV() {
-    const cols = ["Gen", "Code", "RingCode", "Name", "Birth", "BirthPlace", "Gender", "ParentCode", "PartnerCode", "InheritedFrom", "Note"];
-    const lines = [cols.join(";")];
-    for (const p of people) { lines.push(cols.map(c => String(p[c] ?? "").replace(/;/g, ",")).join(";")); }
-    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
-    shareOrDownload("familie.csv", blob);
-}
-
-async function shareOrDownload(filename, blob) {
-    const file = new File([blob], filename, { type: blob.type || "application/octet-stream" });
-    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-        try {
-            await navigator.share({ files: [file], title: "Export" });
-            return;
-        } catch (e) { /* fallback to download */ }
+function exportData(format) {
+    if (format === 'json') {
+        const dataStr = JSON.stringify(people, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `familien-datenbank_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    } else if (format === 'csv') {
+        const headers = ["Gen", "Code", "RingCode", "Name", "Birth", "BirthPlace", "Gender", "ParentCode", "PartnerCode", "InheritedFrom", "Note"];
+        const csvContent = [
+            headers.join(';'),
+            ...people.map(p => headers.map(h => `"${(p[h] || '').toString().replace(/"/g, '""')}"`).join(';'))
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `familien-datenbank_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
     }
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
+// DRUCKFUNKTIONEN FÜR WINDOWS/MAC
 function printTable() {
-    const now = new Date();
-    document.body.classList.add('printing-mode', 'printing-table');
-    document.body.setAttribute('data-print-date', now.toLocaleDateString() + ' ' + now.toLocaleTimeString());
-    window.print();
-    setTimeout(() => {
-        document.body.classList.remove('printing-mode', 'printing-table');
-        document.body.removeAttribute('data-print-date');
-    }, 500);
     $("#dlgPrint").close();
+    
+    const originalStyles = document.head.innerHTML;
+    const printWindow = window.open('', '_blank');
+    
+    const tableContent = $("#peopleTable").outerHTML;
+    const title = "Wappenringe der Familie GEPPERT - Personenliste";
+    const date = new Date().toLocaleDateString('de-DE');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px; 
+                    font-size: 12px;
+                }
+                h1 { 
+                    text-align: center; 
+                    color: #2c3e50; 
+                    margin-bottom: 10px;
+                    font-size: 18px;
+                }
+                .print-date {
+                    text-align: center;
+                    color: #666;
+                    margin-bottom: 20px;
+                    font-size: 11px;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 10px;
+                    font-size: 11px;
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 6px; 
+                    text-align: left;
+                }
+                th { 
+                    background-color: #f8f9fa; 
+                    font-weight: bold;
+                }
+                tr:nth-child(even) {
+                    background-color: #f8f9fa;
+                }
+                @media print {
+                    body { margin: 0; padding: 15px; }
+                    table { font-size: 10px; }
+                    th, td { padding: 4px; }
+                }
+                @page {
+                    margin: 1cm;
+                    size: landscape;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>${title}</h1>
+            <div class="print-date">Druckdatum: ${date}</div>
+            ${tableContent}
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
 }
 
 function printTree() {
-    const now = new Date();
-    document.body.classList.add('printing-mode', 'printing-tree');
-    document.body.setAttribute('data-print-date', now.toLocaleDateString() + ' ' + now.toLocaleTimeString());
-    window.print();
-    setTimeout(() => {
-        document.body.classList.remove('printing-mode', 'printing-tree');
-        document.body.removeAttribute('data-print-date');
-    }, 500);
     $("#dlgPrint").close();
+    
+    const treeContainer = $("#tree");
+    const title = "Wappenringe der Familie GEPPERT - Stammbaum";
+    const date = new Date().toLocaleDateString('de-DE');
+    
+    // SVG klonen und für Druck optimieren
+    const svg = treeContainer.querySelector('svg');
+    if (!svg) {
+        alert("Stammbaum konnte nicht gefunden werden.");
+        return;
+    }
+    
+    const clonedSvg = svg.cloneNode(true);
+    clonedSvg.setAttribute('width', '100%');
+    clonedSvg.setAttribute('height', 'auto');
+    
+    const printWindow = window.open('', '_blank');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { 
+                    margin: 0; 
+                    padding: 20px; 
+                    background: white;
+                    font-family: Arial, sans-serif;
+                }
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                h1 {
+                    color: #2c3e50;
+                    font-size: 20px;
+                    margin: 0 0 5px 0;
+                }
+                .print-date {
+                    color: #666;
+                    font-size: 12px;
+                }
+                .tree-container {
+                    width: 100%;
+                    height: auto;
+                    overflow: visible;
+                }
+                svg {
+                    max-width: 100%;
+                    height: auto;
+                }
+                @media print {
+                    body { padding: 0; margin: 0; }
+                    .print-header { margin-bottom: 10px; }
+                    h1 { font-size: 16px; }
+                    @page {
+                        margin: 1cm;
+                        size: landscape;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-header">
+                <h1>${title}</h1>
+                <div class="print-date">Druckdatum: ${date}</div>
+            </div>
+            <div class="tree-container">${clonedSvg.outerHTML}</div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
 }
 
-const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
+function showStats() {
+    const stats = {
+        total: people.length,
+        byGender: { m: 0, w: 0, d: 0 },
+        byGeneration: {},
+        withPartner: 0,
+        withChildren: 0
+    };
 
-function updateStats() {
-    let total = 0, m = 0, w = 0, d = 0; const byGen = {};
-    for (const p of people) {
-        total++;
-        const g = (p.Gender || "").toLowerCase();
-        if (g === "m") m++; else if (g === "w") w++; else if (g === "d") d++;
-        byGen[p.Gen] = (byGen[p.Gen] || 0) + 1;
-    }
-    let html = `<p>Gesamtanzahl Personen: <b>${total}</b></p>`;
-    html += `<p>davon männlich: <b>${m}</b> — weiblich: <b>${w}</b> — divers: <b>${d}</b></p>`;
-    html += `<ul>`; Object.keys(byGen).sort((a, b) => a - b).forEach(k => html += `<li>Generation ${k}: ${byGen[k]}</li>`); html += `</ul>`;
+    people.forEach(p => {
+        stats.byGender[p.Gender] = (stats.byGender[p.Gender] || 0) + 1;
+        stats.byGeneration[p.Gen] = (stats.byGeneration[p.Gen] || 0) + 1;
+        if (p.PartnerCode) stats.withPartner++;
+        if (people.some(child => child.ParentCode === p.Code)) stats.withChildren++;
+    });
+
+    let html = `<div class="stats-grid">
+        <div class="stat-card"><h3>Gesamt</h3><span class="stat-number">${stats.total}</span></div>
+        <div class="stat-card"><h3>Männlich</h3><span class="stat-number">${stats.byGender.m}</span></div>
+        <div class="stat-card"><h3>Weiblich</h3><span class="stat-number">${stats.byGender.w}</span></div>
+        <div class="stat-card"><h3>Divers</h3><span class="stat-number">${stats.byGender.d}</span></div>
+        <div class="stat-card"><h3>Mit Partner</h3><span class="stat-number">${stats.withPartner}</span></div>
+        <div class="stat-card"><h3>Mit Kindern</h3><span class="stat-number">${stats.withChildren}</span></div>
+    </div>`;
+
+    html += `<h3>Verteilung nach Generationen:</h3><ul>`;
+    Object.entries(stats.byGeneration).sort((a, b) => a[0] - b[0]).forEach(([gen, count]) => {
+        html += `<li>Generation ${gen}: ${count} Personen</li>`;
+    });
+    html += `</ul>`;
+
     $("#statsContent").innerHTML = html;
+    $("#dlgStats").showModal();
+}
+
+function showHelp() {
+    $("#helpContent").innerHTML = `
+        <h3>Anleitung zur Familien-Datenbank</h3>
+        <p>Diese Anwendung hilft dir, den Überblick über deine Familie zu behalten und die Weitergabe von Wappenringen zu dokumentieren.</p>
+
+        <h4>Grundfunktionen:</h4>
+        <ul>
+            <li><strong>Neue Person anlegen</strong>: Über den Button "➕ Neue Person" kannst du Familienmitglieder hinzufügen.</li>
+            <li><strong>Person bearbeiten</strong>: Doppelklick auf eine Zeile in der Tabelle oder auf eine Person im Stammbaum.</li>
+            <li><strong>Person löschen</strong>: Über den Button "🗑️ Löschen" und Eingabe des Personencodes.</li>
+            <li><strong>Daten sichern</strong>: Verwende den "📤 Export"-Button, um deine Daten als JSON oder CSV zu exportieren.</li>
+            <li><strong>Daten importieren</strong>: Über "📥 Import" kannst du zuvor exportierte Daten wieder einlesen.</li>
+        </ul>
+
+        <h4>Wichtige Felder:</h4>
+        <ul>
+            <li><strong>Code</strong>: Wird automatisch vergeben (z.B. "1", "1A", "1Bx")</li>
+            <li><strong>Ring-Code</strong>: Zeigt die Weitergabe der Wappenringe (wird automatisch berechnet)</li>
+            <li><strong>Eltern-Code</strong>: Code der Eltern dieser Person</li>
+            <li><strong>Partner-Code</strong>: Code des Partners/der Partnerin</li>
+            <li><strong>Geerbt von</strong>: Code der Person, von der ein Ring geerbt wurde</li>
+        </ul>
+
+        <h4>Tipps:</h4>
+        <ul>
+            <li>Die Generation wird automatisch aus dem Code berechnet</li>
+            <li>Partner bekommen den Code mit angehängtem "x" (z.B. "1x" für Partner von "1")</li>
+            <li>Kinder bekommen den Code der Eltern plus Buchstabe (z.B. "1A", "1B")</li>
+            <li>Enkel bekommen den Code der Eltern plus Zahl (z.B. "1A1", "1A2")</li>
+            <li>Denke regelmäßig an den Export als Backup!</li>
+        </ul>
+    `;
+    $("#dlgHelp").showModal();
+}
+
+function resetData() {
+    if (confirm("ACHTUNG: Wirklich alle Daten löschen? Diese Aktion kann nicht rückgängig gemacht werden!")) {
+        if (confirm("Bist du absolut sicher? Alle Daten gehen unwiederbringlich verloren!")) {
+            people = seedData();
+            saveState();
+            updateUI();
+            alert("Daten wurden zurückgesetzt.");
+        }
+    }
+}
+
+function undo() {
+    if (undoStack.length === 0) return;
+    redoStack.push(JSON.stringify(people));
+    people = JSON.parse(undoStack.pop());
+    saveState(false);
+    updateUI();
+}
+
+function redo() {
+    if (redoStack.length === 0) return;
+    undoStack.push(JSON.stringify(people));
+    people = JSON.parse(redoStack.pop());
+    saveState(false);
+    updateUI();
 }
 
 function updateUI() {
@@ -858,40 +1146,48 @@ function updateUI() {
 }
 
 function setupEventListeners() {
+    // Haupt-Buttons
     $("#btnNew").addEventListener("click", openNew);
-    $("#saveNew").addEventListener("click", (e) => { e.preventDefault(); addNew(); });
-    $("#saveEdit").addEventListener("click", (e) => { e.preventDefault(); saveEditFn(); });
     $("#btnDelete").addEventListener("click", deletePerson);
-    $("#btnImport").addEventListener("click", () => {
-        const inp = document.createElement("input");
-        inp.type = "file";
-        inp.accept = ".json,.csv,application/json,text/csv";
-        inp.onchange = () => { if (inp.files[0]) doImport(inp.files[0]); };
-        inp.click();
-    });
+    $("#btnImport").addEventListener("click", importData);
     $("#btnExport").addEventListener("click", () => $("#dlgExport").showModal());
-    $("#btnExportJSON").addEventListener("click", exportJSON);
-    $("#btnExportCSV").addEventListener("click", exportCSV);
     $("#btnPrint").addEventListener("click", () => $("#dlgPrint").showModal());
+    $("#btnStats").addEventListener("click", showStats);
+    $("#btnHelp").addEventListener("click", showHelp);
+    $("#btnReset").addEventListener("click", resetData);
+    $("#btnUndo").addEventListener("click", undo);
+    $("#btnRedo").addEventListener("click", redo);
+
+    // Dialog-Buttons
+    $("#btnExportJSON").addEventListener("click", () => exportData('json'));
+    $("#btnExportCSV").addEventListener("click", () => exportData('csv'));
     $("#btnPrintTable").addEventListener("click", printTable);
     $("#btnPrintTree").addEventListener("click", printTree);
-    $("#btnStats").addEventListener("click", () => { updateStats(); $("#dlgStats").showModal(); });
-    $("#btnHelp").addEventListener("click", () => {
-        fetch("help.html").then(r => r.text()).then(html => {
-            $("#helpContent").innerHTML = html;
-            $("#dlgHelp").showModal();
-        }).catch(() => {
-            $("#helpContent").innerHTML = "<p>Hilfedatei konnte nicht geladen werden.</p>";
-            $("#dlgHelp").showModal();
-        });
-    });
-    $("#btnReset").addEventListener("click", () => { if (confirm("Sollen wirklich alle Personen gelöscht werden?")) { people = []; saveState(); updateUI(); } });
-    $("#btnUndo").addEventListener("click", () => { if (!undoStack.length) return; redoStack.push(JSON.stringify(people)); people = JSON.parse(undoStack.pop()); localStorage.setItem(STORAGE_KEY, JSON.stringify(people)); updateUI(); });
-    $("#btnRedo").addEventListener("click", () => { if (!redoStack.length) return; undoStack.push(JSON.stringify(people)); people = JSON.parse(redoStack.pop()); localStorage.setItem(STORAGE_KEY, JSON.stringify(people)); updateUI(); });
 
+    // Formulare
+    $("#formNew").addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (e.submitter && e.submitter.value === 'default') {
+            addNew();
+        }
+    });
+
+    $("#formEdit").addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (e.submitter && e.submitter.value === 'default') {
+            saveEdit();
+        }
+    });
+
+    // Suchfunktion
     $("#search").addEventListener("input", renderTable);
 
-    $("#pBirth").addEventListener("blur", function () {
+    // Dialog-Close-Handler
+    $("#dlgNew").addEventListener("close", () => $("#formNew").reset());
+    $("#dlgEdit").addEventListener("close", () => editCode = null);
+
+    // Datumsvalidierung
+    $("#pBirth").addEventListener("blur", function() {
         if (this.value && !validateBirthDate(this.value)) {
             alert(messages.invalidDate);
             this.value = "";
@@ -899,11 +1195,22 @@ function setupEventListeners() {
         }
     });
 
-    $("#eBirth").addEventListener("blur", function () {
+    $("#eBirth").addEventListener("blur", function() {
         if (this.value && !validateBirthDate(this.value)) {
             alert(messages.invalidDate);
             this.value = "";
             this.focus();
+        }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            e.preventDefault();
+            undo();
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+            e.preventDefault();
+            redo();
         }
     });
 }
@@ -953,7 +1260,8 @@ function ensureVersionVisibility() {
     if (versionUnderTable) versionUnderTable.style.display = 'block';
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+// Initialisierung
+document.addEventListener("DOMContentLoaded", function() {
     loadState();
     setupEventListeners();
     updateUI();
