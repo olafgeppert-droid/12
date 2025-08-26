@@ -6,8 +6,28 @@
   <title>Wappenringe der Familie GEPPERT</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css"/>
+  <style>
+    /* Diese Stile sind spezifisch für die index.html und können hier bleiben */
+    #versionRibbon {
+      position: absolute; right: 12px; bottom: 8px; font-size: 12px;
+      color: #fff; opacity: .9; pointer-events: none; text-align: right; z-index: 10;
+    }
+    @media (max-width: 480px) {
+      #versionRibbon {
+        position: static; text-align: center; padding: 4px 12px;
+        color: #fff; background: rgba(0,0,0,0.2); margin-top: 4px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Redirect-Code muss früh ausgeführt werden, um ein Flackern der Seite zu vermeiden -->
+  <script>
+    if (!sessionStorage.getItem('welcomeShown')) {
+      sessionStorage.setItem('welcomeShown', 'true');
+      window.location.href = 'welcome.html';
+    }
+  </script>
 
   <div class="app">
     <header class="ribbon">
@@ -37,7 +57,7 @@
       </div>
       <div class="hint-row">
         <div id="autoHint" title="Sicherungshinweis">
-          Personen- und Ring-Code werden vom Programm vergeben. Sichern Sie die Datenbank regelmäßig per Export.
+          Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
         </div>
       </div>
       <span id="versionRibbon" class="version-ribbon" aria-label="Softwareversion"></span>
@@ -54,7 +74,7 @@
       </table>
     </section>
     
-    <div class="table-hint">Bearbeiten eines Eintrags durch Doppelklick auf die Tabellenzeile</div>
+    <div class="table-hint">Bearbeiten eines Eintrags durch Doppelklick auf die Person</div>
     <div id="versionUnderTable" class="version-under" role="note"></div>
 
     <section class="tree-panel">
@@ -62,50 +82,50 @@
     </section>
   </div>
 
-  <!-- DIALOGE -->
+  <!-- DIALOGE (Struktur aus Ihrer Originaldatei wiederhergestellt) -->
   <dialog id="dlgNew">
     <form method="dialog" id="formNew">
-      <div class="dlg-head"><strong>Neue Person</strong><button class="close-x" value="cancel" formnovalidate>x</button></div>
+      <div class="dlg-head"><strong>Neue Person</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button></div>
       <div class="dlg-body"><div class="form-grid">
-          <label>Name *<input id="pName" autocomplete="off" required></label>
-          <label>Geburtsdatum (TT.MM.JJJJ) *<input id="pBirth" placeholder="z.B. 04.12.2000" required></label>
-          <label>Geburtsort *<input id="pPlace" required></label>
-          <label>Geschlecht *<select id="pGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
-          <label>Eltern-Code<input id="pParent" placeholder="z.B. 1A"></label>
-          <label>Partner-Code<input id="pPartner" placeholder="z.B. 1Ax"></label>
-          <label>Geerbt von Code<input id="pInherited" placeholder="z.B. 1"></label>
-          <label>Kommentar<input id="pNote"></label>
+          <label> Name *<input id="pName" autocomplete="off" required></label>
+          <label> Geburtsdatum (TT.MM.JJJJ) *<input id="pBirth" inputmode="numeric" placeholder="z.B. 04.12.2000" required></label>
+          <label> Geburtsort *<input id="pPlace" required></label>
+          <label> Geschlecht *<select id="pGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
+          <label> Eltern-Code<input id="pParent" placeholder="z.B. 1A"></label>
+          <label> Partner-Code<input id="pPartner" placeholder="z.B. 1Ax"></label>
+          <label> Geerbt von Code<input id="pInherited" placeholder="z.B. 1"></label>
+          <label> Kommentar<input id="pNote"></label>
       </div></div>
-      <div class="dlg-actions"><button value="cancel" formnovalidate>Abbrechen</button><button id="saveNew" value="default">Speichern</button></div>
+      <div class="dlg-actions"><button value="cancel" type="submit" formnovalidate>Abbrechen</button><button id="saveNew" value="default" type="submit">Speichern</button></div>
     </form>
   </dialog>
 
   <dialog id="dlgEdit">
     <form method="dialog" id="formEdit">
-      <div class="dlg-head"><strong>Person ändern</strong><button class="close-x" value="cancel" formnovalidate>×</button></div>
+      <div class="dlg-head"><strong>Person ändern</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button></div>
       <div class="dlg-body"><div class="form-grid">
-          <label>Name * <input id="eName" required></label>
-          <label>Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
-          <label>Geburtsort * <input id="ePlace" required></label>
-          <label>Geschlecht *<select id="eGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
-          <label>Eltern-Code <input id="eParent"></label>
-          <label>Partner-Code <input id="ePartner"></label>
-          <label>Geerbt von Code <input id="eInherited"></label>
-          <label>Kommentar <input id="eNote"></label>
+          <label> Name * <input id="eName" required></label>
+          <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
+          <label> Geburtsort * <input id="ePlace" required></label>
+          <label> Geschlecht *<select id="eGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
+          <label> Eltern-Code <input id="eParent"></label>
+          <label> Partner-Code <input id="ePartner"></label>
+          <label> Geerbt von Code <input id="eInherited"></label>
+          <label> Kommentar <input id="eNote"></label>
       </div></div>
-      <div class="dlg-actions"><button value="cancel" formnovalidate>Abbrechen</button><button id="saveEdit" value="default">Speichern</button></div>
+      <div class="dlg-actions"><button value="cancel" type="submit" formnovalidate>Abbrechen</button><button id="saveEdit" value="default" type="submit">Speichern</button></div>
     </form>
   </dialog>
 
   <dialog id="dlgPrint">
     <div class="dlg-head"><strong>Drucken</strong><button class="close-x">×</button></div>
-    <div class="dlg-body"><p>Bitte auswählen, was gedruckt werden soll:</p><div class="btn-row"><button class="btn" id="btnPrintTable">🖨️ Tabelle</button><button class="btn" id="btnPrintTree">🖨️ Baum</button></div></div>
+    <div class="dlg-body"><p>Bitte auswählen, was gedruckt werden soll:</p><div class="btn-row"><button class="btn" id="btnPrintTable">🖨️ Tabelle drucken</button><button class="btn" id="btnPrintTree">🖨️ Baum drucken</button></div></div>
     <div class="dlg-actions"><button>Schließen</button></div>
   </dialog>
 
   <dialog id="dlgExport">
     <div class="dlg-head"><strong>Export</strong><button class="close-x">×</button></div>
-    <div class="dlg-body"><p>Format wählen. Tipp: Dient auch als <b>Backup</b>.</p><div class="btn-row"><button class="btn" id="btnExportJSON">📄 JSON</button><button class="btn" id="btnExportCSV">📄 CSV</button></div></div>
+    <div class="dlg-body"><p>Format wählen. Tipp: Diese Exporte dienen auch als <b>Backup</b>.</p><div class="btn-row"><button class="btn" id="btnExportJSON">📄 JSON exportieren</button><button class="btn" id="btnExportCSV">📄 CSV exportieren</button></div></div>
     <div class="dlg-actions"><button>Schließen</button></div>
   </dialog>
 
@@ -120,20 +140,21 @@
     <div class="dlg-body help-body" id="helpContent">Lade Hilfe…</div>
     <div class="dlg-actions"><button>Schließen</button></div>
   </dialog>
-  
-  <!-- Redirect-Skript direkt am Anfang des Body, damit es schnell ausgeführt wird -->
-  <script>
-    if (!sessionStorage.getItem('welcomeShown')) {
-      sessionStorage.setItem('welcomeShown', 'true');
-      window.location.href = 'welcome.html';
-    }
-  </script>
 
-  <!-- SKRIPTE AM ENDE LADEN FÜR MAXIMALE STABILITÄT -->
+  <!-- SKRIPTE AM ENDE LADEN, UM SICHERZUSTELLEN, DASS DAS HTML BEREIT IST -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="version.js"></script>
   <script src="app.js"></script>
-  
+
+  <!-- Dieses Skript muss nach app.js ausgeführt werden, damit APP_VERSION existiert -->
+  <script>
+    (function(){
+      const r = document.getElementById('versionRibbon');
+      const u = document.getElementById('versionUnderTable');
+      if(r && typeof APP_VERSION !== 'undefined') r.textContent = 'Softwareversion ' + APP_VERSION;
+      if(u && typeof APP_VERSION !== 'undefined') u.textContent = 'Softwareversion ' + APP_VERSION;
+    })();
+  </script>
 </body>
 </html>
