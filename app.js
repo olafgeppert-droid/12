@@ -420,22 +420,41 @@ function renderTree() {
             }
         });
 
-        let currentX = 100; // Start mit Margin
+        // In renderTree() Funktion verbessern:
+let currentX = 100;
+const usedXPositions = new Set();
 
-        groupedPersons.forEach((group) => {
-            if (group.length === 2) {
-                const partner1 = group[0];
-                const partner2 = group[1];
-
-                positions.set(partner1.Code, { x: currentX + boxWidth / 2, y: y, person: partner1 });
-                positions.set(partner2.Code, { x: currentX + boxWidth + partnerGap + boxWidth / 2, y: y, person: partner2 });
-                currentX += boxWidth * 2 + partnerGap + horizontalSpacing;
-            } else {
-                const person = group[0];
-                positions.set(person.Code, { x: currentX + boxWidth / 2, y: y, person: person });
-                currentX += boxWidth + horizontalSpacing;
-            }
-        });
+groupedPersons.forEach((group) => {
+    if (group.length === 2) {
+        // Stelle sicher, dass Positionen nicht überlappen
+        let x1 = currentX;
+        let x2 = currentX + boxWidth + partnerGap;
+        
+        // Prüfe auf Überlappungen und verschiebe falls nötig
+        while (usedXPositions.has(x1) || usedXPositions.has(x2)) {
+            currentX += boxWidth + 20;
+            x1 = currentX;
+            x2 = currentX + boxWidth + partnerGap;
+        }
+        
+        usedXPositions.add(x1);
+        usedXPositions.add(x2);
+        
+        positions.set(partner1.Code, { x: x1 + boxWidth / 2, y: y, person: partner1 });
+        positions.set(partner2.Code, { x: x2 + boxWidth / 2, y: y, person: partner2 });
+        currentX += boxWidth * 2 + partnerGap + horizontalSpacing;
+    } else {
+        // Prüfe auf Überlappungen für einzelne Personen
+        while (usedXPositions.has(currentX)) {
+            currentX += boxWidth + 20;
+        }
+        usedXPositions.add(currentX);
+        
+        const person = group[0];
+        positions.set(person.Code, { x: currentX + boxWidth / 2, y: y, person: person });
+        currentX += boxWidth + horizontalSpacing;
+    }
+});
     });
 
     const nodesGroup = document.createElementNS(svgNS, "g");
