@@ -142,9 +142,9 @@ input[type"text"]:focus {
 }
 
 /* Table */
-.table-wrap{padding:12px; overflow-x: auto;}
+.table-wrap{padding:12px}
 table{width:100%;border-collapse:separate;border-spacing:0 6px}
-th,td{text-align:left;padding:8px 12px;font-size: 14px; white-space: nowrap;}
+th,td{text-align:left;padding:8px 12px;font-size: 14px;}
 th{position:sticky; top:120px; background:#fff; z-index:1; box-shadow:0 1px 0 var(--border); font-weight: 600;}
 td{border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 tr td:first-child, tr th:first-child{border-left:1px solid var(--border);border-top-left-radius:6px;border-bottom-left-radius:6px}
@@ -172,25 +172,14 @@ mark{background:#fff3bf;padding:0 2px;border-radius:3px}
 
 /* Tree panel */
 .tree-panel{padding:8px 12px}
-#treeContainer {
-  width: 100%;
-  height: 70vh;
-  overflow: hidden;
-  cursor: grab;
-  position: relative;
-  background:#f8fafc;
-  border:1px solid var(--border);
-  border-radius:8px;
-}
-#tree, #tree svg {
-  width: 100%;
-  height: 100%;
-}
-.node { cursor: pointer; }
+#tree{background:#f8fafc;border:1px solid var(--border);border-radius:8px;min-height:240px;max-height:60vh;overflow:auto;padding:8px}
+
+/* WICHTIG: Diese Regel entfernen oder auskommentieren, da sie die Schriftgröße überschreibt */
+/* .node text{font-size:11px;fill:#111827} */
 
 /* Dialogs */
 dialog{border:none;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:0;max-width:min(800px, 95vw)}
-dialog::backdrop{background:rgba(0,0,0,0.2)}
+dialog::backdrop{background:transparent}
 .dlg-head{padding:12px 16px;background:#f4f6f8;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .dlg-body{padding:16px;max-height:70vh;overflow:auto}
 .dlg-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
@@ -199,10 +188,9 @@ dialog::backdrop{background:rgba(0,0,0,0.2)}
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px}
 .form-grid label{font-size:.9rem;color:#374151; font-weight: 500;}
 .form-grid input, .form-grid select{
-  width: 100%;
   padding:8px 12px;
   border:1px solid #d1d5db;
   border-radius:6px;
@@ -215,55 +203,363 @@ dialog::backdrop{background:rgba(0,0,0,0.2)}
 }
 .btn-row{display:flex;gap:10px;flex-wrap:wrap}
 
-/* Responsive Anpassungen */
-@media (max-width: 768px) {
-  .title { font-size: 24px; }
-  .coa { height: 30px; }
-  .button-row { gap: 5px; }
-  .btn { padding: 6px 8px; font-size: 12px; min-width: 80px; }
-  .search-container { order: 1; max-width: 100%; margin: 6px 0; }
-  .additional-functions { flex-wrap: wrap; }
-  .form-grid { grid-template-columns: 1fr; }
+/* Version labels */
+.version-ribbon{
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  font-size: 12px;
+  color: #fff;
+  opacity: .9;
+  pointer-events: none;
+  text-align: right;
+  z-index: 10;
+  display: block !important;
 }
 
-/* === DRUCK-STILE === */
-/* Diese Klasse wird per JS vor dem Drucken auf den Body gesetzt */
-body.printing-mode {
-    background: white !important;
+/* Responsive Anpassungen */
+@media (max-width: 480px) {
+  .title {
+    font-size: 20px;
+  }
+  
+  .coa {
+    height: 30px;
+  }
+  
+  .button-row {
+    justify-content: space-around;
+  }
+  
+  .btn {
+    flex: 1;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 5px 6px;
+    font-size: 11px;
+    margin: 2px;
+  }
+  
+  .additional-functions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    max-width: 240px;
+    padding: 6px 10px;
+    font-size: 13px;
+    order: 1;
+  }
+  
+  #btnReset {
+    order: 2;
+  }
+  
+  #btnHelp {
+    order: 3;
+  }
+  
+  /* Version auf sehr kleinen Geräten */
+  .version-ribbon {
+    position: static;
+    text-align: center;
+    padding: 4px 8px;
+    color: #fff;
+    background: rgba(0,0,0,0.2);
+    margin-top: 4px;
+  }
+  
+  .version-under {
+    margin: -4px 8px 0;
+    text-align: center;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tree-panel {
+    padding: 4px 8px;
+  }
+  
+  #tree {
+    min-height: 200px;
+    max-height: 50vh;
+  }
 }
-/* Versteckt alles außer dem speziellen Druck-Container */
-body.printing-mode > *:not(.print-container) {
-    display: none !important;
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 24px;
+  }
+  
+  .coa {
+    height: 30px;
+  }
+  
+  .button-row {
+    gap: 5px;
+  }
+  
+  .btn {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 80px;
+  }
+  
+  .search-container {
+    order: 1;
+    max-width: 100%;
+    margin: 6px 0;
+  }
+  
+  .additional-functions {
+    flex-wrap: wrap;
+  }
+  
+  input[type="text"] {
+    max-width: 240px;
+  }
+  
+  .tree-panel {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  #tree {
+    min-height: 300px;
+    transform-origin: top left;
+  }
 }
-/* Dieser Container wird temporär erstellt, um das zu druckende Element zu halten */
-.print-container {
-    display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: auto !important; /* Passt sich der Breite des Inhalts an */
-    height: auto !important;
-    background: white !important;
-    padding: 20px; /* Rand für das PDF */
-    z-index: 9999;
+
+@media (max-width: 1024px) {
+  .button-row {
+    gap: 6px;
+  }
+  
+  .btn {
+    padding: 7px 10px;
+    font-size: 13px;
+    min-width: 90px;
+  }
 }
-/* Spezifische Anpassungen für das Element im Druck-Modus */
-.print-container .table-wrap, .print-container .tree-panel {
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
+
+/* Mobile Tree Optimization */
+@media (max-width: 768px) {
+  .tree-panel {
+    touch-action: manipulation;
+  }
+  
+  #tree {
+    overflow: visible;
+  }
+  
+  #tree svg {
+    min-width: 800px;
+  }
 }
-.print-container #treeContainer {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+
+/* Help body styling */
+.help-body {
+  line-height: 1.6;
 }
-.print-container table {
-    font-size: 9pt;
+
+.help-body h3 {
+  color: var(--brand);
+  margin-top: 1em;
+  margin-bottom: 0.5em;
 }
-.print-container th, .print-container td {
-    border: 1px solid #ccc !important;
-    padding: 4px;
+
+.help-body ul {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.help-body li {
+  margin-bottom: 0.5em;
+}
+
+/* Print styles for better printing experience */
+@media print {
+    body.printing-mode {
+        margin: 0;
+        padding: 0;
+        background: white !important;
+    }
+
+    body.printing-table .ribbon,
+    body.printing-table .toolbar,
+    body.printing-table .hint-row,
+    body.printing-table .table-hint,
+    body.printing-table .version-under,
+    body.printing-table .tree-panel,
+    body.printing-table .additional-functions,
+    body.printing-table .search-container,
+    body.printing-table .btn,
+    body.printing-table dialog {
+        display: none !important;
+    }
+
+    body.printing-tree .ribbon,
+    body.printing-tree .toolbar,
+    body.printing-tree .hint-row,
+    body.printing-tree .table-hint,
+    body.printing-tree .version-under,
+    body.printing-tree .table-wrap,
+    body.printing-tree .additional-functions,
+    body.printing-tree .search-container,
+    body.printing-tree .btn,
+    body.printing-tree dialog {
+        display: none !important;
+    }
+
+    body.printing-mode .app {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    body.printing-table .table-wrap {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+
+    body.printing-table table {
+        width: 100% !important;
+        font-size: 10pt !important;
+        border-spacing: 0 !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto !important;
+    }
+
+    body.printing-table th,
+    body.printing-table td {
+        padding: 4pt 6pt !important;
+        font-size: 9pt !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid !important;
+    }
+
+    body.printing-table tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+    }
+
+    body.printing-tree .tree-panel {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        border: none !important;
+        background: white !important;
+        page-break-before: always !important;
+    }
+
+    body.printing-tree #treeContainer {
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        padding: 0 !important;
+        border: none !important;
+        background: white !important;
+        overflow: visible !important;
+    }
+
+    body.printing-tree #tree {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        transform: none !important;
+    }
+
+    /* Header für Druckausgabe */
+    body.printing-mode::before {
+        content: "Wappenringe der Familie GEPPERT";
+        display: block;
+        text-align: center;
+        font-size: 16pt;
+        font-weight: bold;
+        margin-bottom: 12pt;
+        padding-bottom: 6pt;
+        border-bottom: 2px solid #333;
+    }
+
+    /* Footer für Druckausgabe */
+    body.printing-mode::after {
+        content: "Druckdatum: " attr(data-print-date);
+        display: block;
+        text-align: center;
+        font-size: 9pt;
+        margin-top: 12pt;
+        padding-top: 6pt;
+        border-top: 1px solid #ccc;
+        color: #666;
+    }
+
+    /* Seitenumbrüche optimieren */
+    @page {
+        margin: 1cm;
+        size: A4;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+
+    table, svg {
+        page-break-inside: avoid;
+    }
+
+    tr, .node {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    /* Bessere Lesbarkeit beim Druck */
+    body.printing-mode {
+        font-size: 11pt;
+        line-height: 1.4;
+        color: #000 !important;
+    }
+
+    /* Farben für Generationen beim Druck (graustufen-optimiert) */
+    body.printing-table tr[style*="background-color: var(--gen1-color)"],
+    body.printing-table tr[style*="background-color: #e8f5e8"] {
+        background-color: #f0f0f0 !important;
+    }
+
+    body.printing-table tr[style*="background-color: var(--gen2-color)"],
+    body.printing-table tr[style*="background-color: #e3f2fd"] {
+        background-color: #e8e8e8 !important;
+    }
+
+    body.printing-table tr[style*="background-color: var(--gen3-color)"],
+    body.printing-table tr[style*="background-color: #f3e5f5"] {
+        background-color: #f0e8f0 !important;
+    }
+}
+
+/* Spezielle Optimierungen für den Baum-Druck */
+body.printing-tree .node text {
+    font-size: 10pt !important;
+    fill: #000 !important;
+}
+
+body.printing-tree .node rect {
+    stroke: #000 !important;
+    fill: #f9f9f9 !important;
+}
+
+body.printing-tree .connections line {
+    stroke: #666 !important;
+    stroke-width: 1.5 !important;
 }
