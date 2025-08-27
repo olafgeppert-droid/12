@@ -4,10 +4,6 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
-
-  <!-- Skripte werden einmalig im Head geladen -->
-  <script src="version.js"></script>
-  <script src="app.js"></script>
   
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css"/>
@@ -86,31 +82,24 @@
     </section>
   </div>
 
-  <!-- Dialoge bleiben unverändert -->
-  <dialog id="dlgNew"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgEdit"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgPrint"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgExport"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgStats"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgHelp"><!-- ... Inhalt ... --></dialog>
-  <dialog id="dlgImportError"><!-- ... Inhalt ... --></dialog>
+  <!-- Dialoge -->
+  <dialog id="dlgNew">
+    <form method="dialog" id="formNew">
+      <div class="dlg-head"><string>Neue Person</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button></div>
+      <div class="dlg-body"><div class="form-grid">
+          <label>Name *<input id="pName" autocomplete="off" required></label>
+          <label>Geburtsdatum (TT.MM.JJJJ) *<input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required></label>
+          <label>Geburtsort *<input id="pPlace" required></label>
+          <label>Geschlecht *<select id="pGender" required><option value=""></option><option value="m">m</option><option value="w">w</option><option value="d">d</option></select></label>
+          <label>Eltern-Code<input id="pParent" placeholder="z. B. 1A"></label>
+          <label>Partner-Code<input id="pPartner" placeholder="z. B. 1Ax"></label>
+          <label>Geerbt von Code<input id="pInherited" placeholder="z. B. 1"></label>
+          <label>Kommentar<input id="pNote"></label>
+      </div><div style="margin-top: 12px; font-size: 12px; color: #666;">* Pflichtfelder (Eltern-Code ist nur für Kinder erforderlich)</div></div>
+      <div class="dlg-actions"><button value="cancel" type="submit" formnovalidate>Abbrechen</button><button id="saveNew" value="default" type="submit">Speichern</button></div>
+    </form>
+  </dialog>
 
-  <!-- Externe Bibliotheken -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
-  <!-- Das doppelte Laden der Skripte wurde entfernt, da sie bereits im Head stehen. -->
-
-  <!-- Versionsanzeige -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof APP_VERSION !== 'undefined') {
-        const r = document.getElementById('versionRibbon');
-        const u = document.getElementById('versionUnderTable');
-        if(r) r.textContent = 'Softwareversion ' + APP_VERSION;
-        if(u) u.textContent = 'Softwareversion ' + APP_VERSION;
-      }
-    });
-  </script>
-</body>
-</html>
+  <dialog id="dlgEdit">
+    <form method="dialog" id="formEdit">
+      <div class="dlg-head"><strong>Person ändern</strong><button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</bu
