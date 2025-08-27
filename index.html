@@ -8,14 +8,6 @@
   <link rel="stylesheet" href="styles.css"/>
   <script src="version.js"></script>
   <script src="app.js"></script>
-  <script>
-    (function(){
-      const r = document.getElementById('versionRibbon');
-      const u = document.getElementById('versionUnderTable');
-      if (r) r.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
-      if (u) u.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
-    })();
-  </script>
 </head>
 <body>
   <div class="app">
@@ -42,13 +34,14 @@
           <div class="search-container">
             <input id="search" type="text" placeholder="Personen suchen (Name/Code)">
           </div>
-          <span id="versionRibbon" class="version ribbon-version"></span>
         </div>
       </div>
 
       <div class="hint-row">
         <div id="autoHint">
+          Bearbeiten eines Eintrags durch Doppelklick auf die Person.<br>
           Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
+          <span id="versionRibbon" class="version ribbon-version" style="float:right;"></span>
         </div>
       </div>
     </header>
@@ -72,13 +65,13 @@
         </thead>
         <tbody></tbody>
       </table>
-      <div class="version-under" id="versionUnderTable"></div>
     </section>
 
     <section class="tree-wrap">
       <div id="tree" class="tree"></div>
     </section>
 
+    <!-- Dialoge: Neue Person -->
     <dialog id="dlgNew">
       <form method="dialog" id="formNew">
         <div class="dlg-head">
@@ -87,41 +80,22 @@
         </div>
         <div class="dlg-body">
           <div class="form-grid">
-            <label> Name *
-              <input id="pName" autocomplete="off" required>
-            </label>
-            <label> Geburtsdatum (TT.MM.JJJJ) *
-              <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required>
-            </label>
-            <label> Todesdatum (TT.MM.JJJJ)
-              <input id="pDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
-            </label>
-            <label> Geburtsort *
-              <input id="pPlace" required>
-            </label>
-            <label> Geschlecht *
-              <select id="pGender" required>
+            <label>Name * <input id="pName" autocomplete="off"></label>
+            <label>Geburtsdatum (TT.MM.JJJJ) * <input id="pBirth" placeholder="z. B. 04.12.2000"></label>
+            <label>Todesdatum (TT.MM.JJJJ) <input id="pDeath" placeholder="z. B. 21.07.2045"></label>
+            <label>Geburtsort * <input id="pPlace"></label>
+            <label>Geschlecht * 
+              <select id="pGender">
                 <option value=""></option>
                 <option value="m">m</option>
                 <option value="w">w</option>
                 <option value="d">d</option>
               </select>
             </label>
-            <label> Eltern-Code
-              <input id="pParent" placeholder="z. B. 1A">
-            </label>
-            <label> Partner-Code
-              <input id="pPartner" placeholder="z. B. 1Ax">
-            </label>
-            <label> Geerbt von Code
-              <input id="pInherited" placeholder="z. B. 1">
-            </label>
-            <label> Kommentar
-              <input id="pNote">
-            </label>
-          </div>
-          <div style="margin-top:12px; font-size:12px; color:#666">
-            Hinweis: Todesdatum ist optional.
+            <label>Eltern-Code <input id="pParent" placeholder="z. B. 1A"></label>
+            <label>Partner-Code <input id="pPartner" placeholder="z. B. 1Ax"></label>
+            <label>Geerbt von Code <input id="pInherited" placeholder="z. B. 1"></label>
+            <label>Kommentar <input id="pNote"></label>
           </div>
         </div>
         <div class="dlg-actions">
@@ -131,6 +105,7 @@
       </form>
     </dialog>
 
+    <!-- Dialoge: Person bearbeiten -->
     <dialog id="dlgEdit">
       <form method="dialog" id="formEdit">
         <div class="dlg-head">
@@ -139,27 +114,22 @@
         </div>
         <div class="dlg-body">
           <div class="form-grid">
-            <label> Name * <input id="eName" required></label>
-            <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
-            <label> Todesdatum (TT.MM.JJJJ)
-              <input id="eDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
-            </label>
-            <label> Geburtsort * <input id="ePlace" required></label>
-            <label> Geschlecht *
-              <select id="eGender" required>
+            <label>Name * <input id="eName"></label>
+            <label>Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth"></label>
+            <label>Todesdatum (TT.MM.JJJJ) <input id="eDeath" placeholder="z. B. 21.07.2045"></label>
+            <label>Geburtsort * <input id="ePlace"></label>
+            <label>Geschlecht * 
+              <select id="eGender">
                 <option value=""></option>
                 <option value="m">m</option>
                 <option value="w">w</option>
                 <option value="d">d</option>
               </select>
             </label>
-            <label> Eltern-Code <input id="eParent"></label>
-            <label> Partner-Code <input id="ePartner"></label>
-            <label> Geerbt von Code <input id="eInherited"></label>
-            <label> Kommentar <input id="eNote"></label>
-          </div>
-          <div style="margin-top:12px; font-size:12px; color:#666">
-            Hinweis: Todesdatum ist optional.
+            <label>Eltern-Code <input id="eParent"></label>
+            <label>Partner-Code <input id="ePartner"></label>
+            <label>Geerbt von Code <input id="eInherited"></label>
+            <label>Kommentar <input id="eNote"></label>
           </div>
         </div>
         <div class="dlg-actions">
@@ -168,7 +138,7 @@
         </div>
       </form>
     </dialog>
-  </div>
 
+  </div>
 </body>
 </html>
