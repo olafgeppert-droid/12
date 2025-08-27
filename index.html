@@ -103,8 +103,8 @@
             <th>Ring-Code</th>
             <th>Name</th>
             <th>Geburtsdatum</th>
+            <th>Todesdatum</th>
             <th>Geburtsort</th>
-            <th>Geschlecht</th>
             <th>Eltern-Code</th>
             <th>Partner-Code</th>
             <th>Geerbt von</th>
@@ -141,6 +141,9 @@
           </label>
           <label> Geburtsdatum (TT.MM.JJJJ) *
             <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required>
+          </label>
+          <label> Todesdatum (TT.MM.JJJJ)
+            <input id="pDeath" inputmode="numeric" placeholder="z. B. 01.01.2050">
           </label>
           <label> Geburtsort *
             <input id="pPlace" required>
@@ -187,6 +190,7 @@
         <div class="form-grid">
           <label> Name * <input id="eName" required></label>
           <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
+          <label> Todesdatum (TT.MM.JJJJ) <input id="eDeath"></label>
           <label> Geburtsort * <input id="ePlace" required></label>
           <label> Geschlecht *
             <select id="eGender" required>
