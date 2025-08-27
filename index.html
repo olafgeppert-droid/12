@@ -1,77 +1,128 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Wappenringe der Familie GEPPERT</title>
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="styles.css"/>
-<script src="version.js"></script>
-<script src="app.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Wappenringe der Familie GEPPERT</title>
+  <link rel="icon" href="data:,"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="version.js"></script>
+  <script src="app.js"></script>
 </head>
 <body>
-<div class="app">
-<header class="ribbon">
-<div class="title-wrap">
-<img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
-<h1 class="title">Wappenringe der Familie GEPPERT</h1>
-<img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
-</div>
-<div class="toolbar">
-<div class="button-row main-functions">
-<button class="btn" id="btnNew">➕ Neue Person</button>
-<button class="btn" id="btnDelete">🗑️ Löschen</button>
-<button class="btn" id="btnImport">📥 Import</button>
-<button class="btn" id="btnExport">📤 Export</button>
-<button class="btn" id="btnPrint">🖨️ Drucken</button>
-<button class="btn" id="btnStats">📊 Statistiken</button>
-</div>
-<div class="button-row additional-functions">
-<button class="btn" id="btnUndo">↶ Rückgängig</button>
-<button class="btn" id="btnRedo">↷ Wiederholen</button>
-<button class="btn danger" id="btnReset">⛔ Reset</button>
-<div class="search-container">
-<input id="search" type="text" placeholder="Personen suchen (Name/Code)">
-</div>
-<button class="btn help" id="btnHelp">❓ Hilfe</button>
-</div>
-</div>
-<div class="hint-row">
-<div id="autoHint">Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.</div>
-</div>
-</header>
+  <div class="app">
+    <header class="ribbon">
+      <div class="title-wrap">
+        <img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
+        <h1 class="title">Wappenringe der Familie GEPPERT</h1>
+        <img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
+      </div>
+      <div class="toolbar">
+        <div class="button-row main-functions">
+          <button class="btn" id="btnNew">➕ Neue Person</button>
+          <button class="btn" id="btnDelete">🗑️ Löschen</button>
+          <button class="btn" id="btnImport">📥 Import</button>
+          <button class="btn" id="btnExport">📤 Export</button>
+          <button class="btn" id="btnPrint">🖨️ Drucken</button>
+          <button class="btn" id="btnStats">📊 Statistiken</button>
+        </div>
+        <div class="button-row additional-functions">
+          <button class="btn" id="btnUndo">↶ Rückgängig</button>
+          <button class="btn" id="btnRedo">↷ Wiederholen</button>
+          <button class="btn danger" id="btnReset">⛔ Reset</button>
+          <div class="search-container">
+            <input id="search" type="text" placeholder="Personen suchen (Name/Code)">
+          </div>
+          <button class="btn help" id="btnHelp">❓ Hilfe</button>
+        </div>
+      </div>
+      <div class="hint-row">
+        <div id="autoHint">Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.</div>
+      </div>
+    </header>
 
+    <section class="table-wrap">
+      <table id="peopleTable">
+        <thead>
+          <tr>
+            <th>Gen</th>
+            <th>Code</th>
+            <th>Ring-Code</th>
+            <th>Name</th>
+            <th>Geburtsdatum</th>
+            <th>Todesdatum</th>
+            <th>Geburtsort</th>
+            <th>Eltern-Code</th>
+            <th>Partner-Code</th>
+            <th>Geerbt von</th>
+            <th>Kommentar</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-<section class="table-wrap">
-<table id="peopleTable">
-<thead>
-<tr>
-<th>Gen</th>
-<th>Code</th>
-<th>Ring-Code</th>
-<th>Name</th>
-<th>Geburtsdatum</th>
-<th>Todesdatum</th>
-<th>Geburtsort</th>
-<th>Eltern-Code</th>
-<th>Partner-Code</th>
-<th>Geerbt von</th>
-<th>Kommentar</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</section>
+    <dialog id="dlgNew">
+      <form method="dialog">
+        <div class="dlg-head">
+          <strong>Neue Person</strong>
+          <button class="close-x" value="cancel">×</button>
+        </div>
+        <div class="dlg-body">
+          <div class="form-grid">
+            <label>Name *<input id="pName" required></label>
+            <label>Geburtsdatum *<input id="pBirth"></label>
+            <label>Todesdatum<input id="pDeath"></label>
+            <label>Geburtsort *<input id="pPlace" required></label>
+            <label>Geschlecht *<select id="pGender" required>
+              <option value=""></option>
+              <option value="m">m</option>
+              <option value="w">w</option>
+              <option value="d">d</option>
+            </select></label>
+            <label>Eltern-Code<input id="pParent"></label>
+            <label>Partner-Code<input id="pPartner"></label>
+            <label>Geerbt von Code<input id="pInherited"></label>
+            <label>Kommentar<input id="pNote"></label>
+          </div>
+        </div>
+        <div class="dlg-actions">
+          <button value="cancel">Abbrechen</button>
+          <button id="saveNew">Speichern</button>
+        </div>
+      </form>
+    </dialog>
 
-
-<dialog id="dlgNew">
-<form method="dialog">
-<div class="dlg-head">
-<strong>Neue Person</strong>
-<button class="close-x" value="cancel">×</button>
-</div>
-<div class="dlg-body">
-<div class="form-grid">
-<label>Name *<input id="pName" required></label>
-<label>Geburtsdatum *<input id="pBirth"></label>
+    <dialog id="dlgEdit">
+      <form method="dialog">
+        <div class="dlg-head">
+          <strong>Person ändern</strong>
+          <button class="close-x" value="cancel">×</button>
+        </div>
+        <div class="dlg-body">
+          <div class="form-grid">
+            <label>Name *<input id="eName" required></label>
+            <label>Geburtsdatum *<input id="eBirth"></label>
+            <label>Todesdatum<input id="eDeath"></label>
+            <label>Geburtsort *<input id="ePlace" required></label>
+            <label>Geschlecht *<select id="eGender" required>
+              <option value=""></option>
+              <option value="m">m</option>
+              <option value="w">w</option>
+              <option value="d">d</option>
+            </select></label>
+            <label>Eltern-Code<input id="eParent"></label>
+            <label>Partner-Code<input id="ePartner"></label>
+            <label>Geerbt von Code<input id="eInherited"></label>
+            <label>Kommentar<input id="eNote"></label>
+          </div>
+        </div>
+        <div class="dlg-actions">
+          <button value="cancel">Abbrechen</button>
+          <button id="saveEdit">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
 </html>

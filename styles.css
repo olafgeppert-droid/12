@@ -1,63 +1,213 @@
-/* styles.css – modernes, gut lesbares UI */
-:root{
-  --brand: #1665d8;
-  --brand2: #0f4fb3;
-  --ribbon-fg: #fff;
-  --panel: #ffffff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --danger: #dc2626;
-  --button-height: 38px;
-  --button-font-size: 14px;
-  --input-height: 38px;
-  
-  /* Generation colors */
-  --gen1-color: #e8f5e8;
-  --gen2-color: #e3f2fd;
-  --gen3-color: #f3e5f5;
-  --gen4-color: #fff3e0;
-  --gen5-color: #e8eaf6;
-  --gen6-color: #f1f8e9;
-  --gen7-color: #ffebee;
+/* styles.css – Komplettversion */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  color: #333;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:#fafafa;color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif}
-
-.app{max-width:1240px;margin:0 auto;padding-bottom:32px}
-
-/* Ribbon */
-.ribbon{
-  position:sticky; top:0; z-index:5;
-  background: linear-gradient(90deg, var(--brand), var(--brand2));
-  color:var(--ribbon-fg);
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-  position: relative;
-  padding-bottom: 20px;
-}
-.title-wrap{display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 16px}
-.title{margin:0;font-size:28px;letter-spacing:.3px;text-align:center}
-.coa{height:34px;width:auto}
-
-/* Toolbar */
-.toolbar{
+.app {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background:#fff;
-  border-top:1px solid rgba(255,255,255,.2);
-  border-bottom:1px solid var(--border);
-  padding:12px;
-  width: 100%;
+  min-height: 100vh;
 }
 
-.button-row{
+header.ribbon {
+  background-color: #2e5c8a;
+  color: white;
+  padding: 10px;
+}
+
+.title-wrap {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
 }
 
-.search-container{
+.title {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.coa {
+  width: 50px;
+  height: 50px;
+}
+
+.toolbar {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  background: #ffffff;
+  color: #2e5c8a;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn:hover {
+  background: #f0f0f0;
+}
+
+.btn.danger {
+  background: #d9534f;
+  color: white;
+  border: none;
+}
+
+.btn.help {
+  background: #5bc0de;
+  color: white;
+  border: none;
+}
+
+.search-container {
+  margin-left: auto;
+}
+
+#search {
+  padding: 4px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Hinweiszeile */
+.hint-row {
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Tabelle */
+.table-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+}
+
+#peopleTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+#peopleTable th,
+#peopleTable td {
+  border: 1px solid #ddd;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+#peopleTable th {
+  background: #efefef;
+  font-weight: bold;
+}
+
+#peopleTable tr:hover {
+  background: #f5f5f5;
+}
+
+mark {
+  background-color: yellow;
+  color: black;
+}
+
+/* Dialoge */
+dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  font-size: 14px;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.dlg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #2e5c8a;
+  color: white;
+  font-weight: bold;
+}
+
+.close-x {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.dlg-body {
+  padding: 10px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.form-grid input,
+.form-grid select {
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.dlg-actions {
+  padding: 8px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #ddd;
+}
+
+.dlg-actions button {
+  background: #2e5c8a;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dlg-actions button:hover {
+  background: #24476b;
+}
+
+/* Sonstiges */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
