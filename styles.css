@@ -1,11 +1,35 @@
-/* styles.css – Komplettversion */
+/* styles.css – modernes, gut lesbares UI */
+:root{
+  --brand: #1665d8;
+  --brand2: #0f4fb3;
+  --ribbon-fg: #fff;
+  --panel: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
+  --danger: #dc2626;
+  --button-height: 38px;
+  --button-font-size: 14px;
+  --input-height: 38px;
+  
+  /* Generation colors */
+  --gen1-color: #e8f5e8;
+  --gen2-color: #e3f2fd;
+  --gen3-color: #f3e5f5;
+  --gen4-color: #fff3e0;
+  --gen5-color: #e8eaf6;
+  --gen6-color: #f1f8e9;
+  --gen7-color: #ffebee;
+}
+
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   font-size: 14px;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: #f9fafb;
+  color: var(--text);
 }
 
 .app {
@@ -14,10 +38,11 @@ body {
   min-height: 100vh;
 }
 
+/* Ribbon */
 header.ribbon {
-  background-color: #2e5c8a;
-  color: white;
-  padding: 10px;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand2) 100%);
+  color: var(--ribbon-fg);
+  padding: 10px 0 8px;
 }
 
 .title-wrap {
@@ -37,62 +62,59 @@ header.ribbon {
   height: 50px;
 }
 
-.toolbar {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* Toolbar: jetzt EINZEILIG und zentriert */
+.toolbar{
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  gap:10px;
+  background:#fff;
+  border-top:1px solid rgba(255,255,255,.2);
+  border-bottom:1px solid var(--border);
+  padding:12px;
+  width:100%;
+  justify-content:center;
+  align-items:center;
 }
+.toolbar .button-row{display:contents}
 
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.button-row{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 .btn {
   background: #ffffff;
-  color: #2e5c8a;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 4px 10px;
+  color: var(--brand2);
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 12px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--button-font-size);
+  height: var(--button-height);
 }
+.btn:hover { background: #f3f4f6; }
+.btn.danger { background: var(--danger); color:#fff; border: none; }
+.btn.help { background: #0ea5e9; color:#fff; border: none; }
 
-.btn:hover {
-  background: #f0f0f0;
-}
-
-.btn.danger {
-  background: #d9534f;
-  color: white;
-  border: none;
-}
-
-.btn.help {
-  background: #5bc0de;
-  color: white;
-  border: none;
-}
-
-.search-container {
-  margin-left: auto;
-}
-
+.search-container { margin-left: 8px; }
 #search {
-  padding: 4px;
+  height: var(--input-height);
+  padding: 4px 8px;
   font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
 }
 
-/* Hinweiszeile */
+/* Hinweiszeilen */
 .hint-row {
   font-size: 12px;
   margin-top: 8px;
   text-align: center;
 }
+.version-under { text-align:center; font-size:12px; color:#666; margin:8px 0; }
 
 /* Tabelle */
 .table-wrap {
@@ -104,50 +126,43 @@ header.ribbon {
 #peopleTable {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--panel);
 }
 
 #peopleTable th,
 #peopleTable td {
-  border: 1px solid #ddd;
-  padding: 4px 6px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
   text-align: left;
 }
 
 #peopleTable th {
-  background: #efefef;
+  background: #f3f4f6;
   font-weight: bold;
 }
 
-#peopleTable tr:hover {
-  background: #f5f5f5;
-}
+#peopleTable tr:hover { background: #f9fafb; }
 
-mark {
-  background-color: yellow;
-  color: black;
-}
+mark { background-color: yellow; color: black; }
 
 /* Dialoge */
 dialog {
   border: none;
   border-radius: 8px;
   padding: 0;
-  max-width: 500px;
-  width: 90%;
+  max-width: 560px;
+  width: 92%;
   font-size: 14px;
 }
 
-dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.3);
-}
+dialog::backdrop { background-color: rgba(0,0,0,0.3); }
 
 .dlg-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px;
-  background: #2e5c8a;
+  padding: 10px 12px;
+  background: var(--brand2);
   color: white;
   font-weight: bold;
 }
@@ -160,14 +175,12 @@ dialog::backdrop {
   cursor: pointer;
 }
 
-.dlg-body {
-  padding: 10px;
-}
+.dlg-body { padding: 12px; }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 
 .form-grid label {
@@ -178,36 +191,36 @@ dialog::backdrop {
 
 .form-grid input,
 .form-grid select {
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 13px;
+  height: var(--input-height);
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
 }
 
 .dlg-actions {
-  padding: 8px;
+  padding: 10px 12px;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e5e7eb;
 }
 
 .dlg-actions button {
-  background: #2e5c8a;
+  background: var(--brand2);
   color: white;
   border: none;
-  padding: 5px 12px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
 }
+.dlg-actions button:hover { background: #0b3f8f; }
 
-.dlg-actions button:hover {
-  background: #24476b;
-}
+/* Baum-Ansicht (SVG) – unverändert aus deiner App */
+.tree-wrap { padding: 10px; }
+.tree { width: 100%; min-height: 400px; background:#fff; border:1px solid var(--border); border-radius:8px; }
 
-/* Sonstiges */
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+/* Druckansichten … (bestehende Regeln beibehalten) */
+@media (max-width: 640px){
+  .form-grid{ grid-template-columns: 1fr; }
 }

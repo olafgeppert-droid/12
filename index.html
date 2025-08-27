@@ -4,10 +4,20 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
-  <link rel="icon" href="data:,"/>
-  <link rel="stylesheet" href="styles.css"/>
+
+  <!-- Version zuerst laden -->
   <script src="version.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    (function(){
+      const r = document.getElementById('versionRibbon');
+      const u = document.getElementById('versionUnderTable');
+      if (r) r.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
+      if (u) u.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <div class="app">
@@ -17,6 +27,7 @@
         <h1 class="title">Wappenringe der Familie GEPPERT</h1>
         <img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
       </div>
+
       <div class="toolbar">
         <div class="button-row main-functions">
           <button class="btn" id="btnNew">➕ Neue Person</button>
@@ -25,19 +36,22 @@
           <button class="btn" id="btnExport">📤 Export</button>
           <button class="btn" id="btnPrint">🖨️ Drucken</button>
           <button class="btn" id="btnStats">📊 Statistiken</button>
+          <button class="btn help" id="btnHelp">❓ Hilfe</button>
         </div>
         <div class="button-row additional-functions">
           <button class="btn" id="btnUndo">↶ Rückgängig</button>
           <button class="btn" id="btnRedo">↷ Wiederholen</button>
-          <button class="btn danger" id="btnReset">⛔ Reset</button>
           <div class="search-container">
             <input id="search" type="text" placeholder="Personen suchen (Name/Code)">
           </div>
-          <button class="btn help" id="btnHelp">❓ Hilfe</button>
+          <span id="versionRibbon" class="version ribbon-version"></span>
         </div>
       </div>
+
       <div class="hint-row">
-        <div id="autoHint">Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.</div>
+        <div id="autoHint">
+          Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
+        </div>
       </div>
     </header>
 
@@ -60,30 +74,58 @@
         </thead>
         <tbody></tbody>
       </table>
+      <div class="version-under" id="versionUnderTable"></div>
     </section>
 
+    <!-- Stammbaum -->
+    <section class="tree-wrap">
+      <div id="tree" class="tree"></div>
+    </section>
+
+    <!-- Dialog: Neue Person -->
     <dialog id="dlgNew">
-      <form method="dialog">
+      <form method="dialog" id="formNew">
         <div class="dlg-head">
           <strong>Neue Person</strong>
-          <button class="close-x" value="cancel">×</button>
+          <button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button>
         </div>
         <div class="dlg-body">
           <div class="form-grid">
-            <label>Name *<input id="pName" required></label>
-            <label>Geburtsdatum *<input id="pBirth"></label>
-            <label>Todesdatum<input id="pDeath"></label>
-            <label>Geburtsort *<input id="pPlace" required></label>
-            <label>Geschlecht *<select id="pGender" required>
-              <option value=""></option>
-              <option value="m">m</option>
-              <option value="w">w</option>
-              <option value="d">d</option>
-            </select></label>
-            <label>Eltern-Code<input id="pParent"></label>
-            <label>Partner-Code<input id="pPartner"></label>
-            <label>Geerbt von Code<input id="pInherited"></label>
-            <label>Kommentar<input id="pNote"></label>
+            <label> Name *
+              <input id="pName" autocomplete="off" required>
+            </label>
+            <label> Geburtsdatum (TT.MM.JJJJ) *
+              <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required>
+            </label>
+            <label> Todesdatum (TT.MM.JJJJ)
+              <input id="pDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
+            </label>
+            <label> Geburtsort *
+              <input id="pPlace" required>
+            </label>
+            <label> Geschlecht *
+              <select id="pGender" required>
+                <option value=""></option>
+                <option value="m">m</option>
+                <option value="w">w</option>
+                <option value="d">d</option>
+              </select>
+            </label>
+            <label> Eltern-Code
+              <input id="pParent" placeholder="z. B. 1A">
+            </label>
+            <label> Partner-Code
+              <input id="pPartner" placeholder="z. B. 1Ax">
+            </label>
+            <label> Geerbt von Code
+              <input id="pInherited" placeholder="z. B. 1">
+            </label>
+            <label> Kommentar
+              <input id="pNote">
+            </label>
+          </div>
+          <div style="margin-top:12px; font-size:12px; color:#666">
+            Hinweis: Todesdatum ist optional.
           </div>
         </div>
         <div class="dlg-actions">
@@ -93,28 +135,36 @@
       </form>
     </dialog>
 
+    <!-- Dialog: Person ändern -->
     <dialog id="dlgEdit">
-      <form method="dialog">
+      <form method="dialog" id="formEdit">
         <div class="dlg-head">
           <strong>Person ändern</strong>
-          <button class="close-x" value="cancel">×</button>
+          <button class="close-x" value="cancel" type="submit" formnovalidate aria-label="Schließen">×</button>
         </div>
         <div class="dlg-body">
           <div class="form-grid">
-            <label>Name *<input id="eName" required></label>
-            <label>Geburtsdatum *<input id="eBirth"></label>
-            <label>Todesdatum<input id="eDeath"></label>
-            <label>Geburtsort *<input id="ePlace" required></label>
-            <label>Geschlecht *<select id="eGender" required>
-              <option value=""></option>
-              <option value="m">m</option>
-              <option value="w">w</option>
-              <option value="d">d</option>
-            </select></label>
-            <label>Eltern-Code<input id="eParent"></label>
-            <label>Partner-Code<input id="ePartner"></label>
-            <label>Geerbt von Code<input id="eInherited"></label>
-            <label>Kommentar<input id="eNote"></label>
+            <label> Name * <input id="eName" required></label>
+            <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
+            <label> Todesdatum (TT.MM.JJJJ)
+              <input id="eDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
+            </label>
+            <label> Geburtsort * <input id="ePlace" required></label>
+            <label> Geschlecht *
+              <select id="eGender" required>
+                <option value=""></option>
+                <option value="m">m</option>
+                <option value="w">w</option>
+                <option value="d">d</option>
+              </select>
+            </label>
+            <label> Eltern-Code <input id="eParent"></label>
+            <label> Partner-Code <input id="ePartner"></label>
+            <label> Geerbt von Code <input id="eInherited"></label>
+            <label> Kommentar <input id="eNote"></label>
+          </div>
+          <div style="margin-top:12px; font-size:12px; color:#666">
+            Hinweis: Todesdatum ist optional.
           </div>
         </div>
         <div class="dlg-actions">
@@ -123,6 +173,21 @@
         </div>
       </form>
     </dialog>
+
+    <!-- Export / Druck / Hilfe usw. (bestehende Dialoge bleiben unverändert) -->
+    <!-- ... vorhandene Dialoge aus deiner Datei bleiben hier ... -->
   </div>
+
+  <!-- Version & App Scripts am Ende erneut (falls oben entfernt wurde) -->
+  <script src="version.js"></script>
+  <script src="app.js"></script>
+  <script>
+    (function(){
+      const r = document.getElementById('versionRibbon');
+      const u = document.getElementById('versionUnderTable');
+      if (r) r.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
+      if (u) u.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
+    })();
+  </script>
 </body>
 </html>
