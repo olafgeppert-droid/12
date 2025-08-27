@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
 
-  <!-- Version zuerst laden -->
+  <link rel="stylesheet" href="styles.css"/>
   <script src="version.js"></script>
   <script src="app.js"></script>
-
   <script>
     (function(){
       const r = document.getElementById('versionRibbon');
@@ -17,7 +16,6 @@
       if (u) u.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <div class="app">
@@ -77,12 +75,10 @@
       <div class="version-under" id="versionUnderTable"></div>
     </section>
 
-    <!-- Stammbaum -->
     <section class="tree-wrap">
       <div id="tree" class="tree"></div>
     </section>
 
-    <!-- Dialog: Neue Person -->
     <dialog id="dlgNew">
       <form method="dialog" id="formNew">
         <div class="dlg-head">
@@ -135,7 +131,6 @@
       </form>
     </dialog>
 
-    <!-- Dialog: Person ändern -->
     <dialog id="dlgEdit">
       <form method="dialog" id="formEdit">
         <div class="dlg-head">
@@ -173,21 +168,7 @@
         </div>
       </form>
     </dialog>
-
-    <!-- Export / Druck / Hilfe usw. (bestehende Dialoge bleiben unverändert) -->
-    <!-- ... vorhandene Dialoge aus deiner Datei bleiben hier ... -->
   </div>
 
-  <!-- Version & App Scripts am Ende erneut (falls oben entfernt wurde) -->
-  <script src="version.js"></script>
-  <script src="app.js"></script>
-  <script>
-    (function(){
-      const r = document.getElementById('versionRibbon');
-      const u = document.getElementById('versionUnderTable');
-      if (r) r.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
-      if (u) u.textContent = 'Softwareversion ' + (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '');
-    })();
-  </script>
 </body>
 </html>
