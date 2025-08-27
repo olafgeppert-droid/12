@@ -1,3 +1,4 @@
+/* styles.css – modernes, gut lesbares UI */
 :root{
   --brand: #1665d8;
   --brand2: #0f4fb3;
@@ -11,7 +12,6 @@
   --button-font-size: 14px;
   --input-height: 38px;
 
-  /* Generation colors */
   --gen1-color: #e8f5e8;
   --gen2-color: #e3f2fd;
   --gen3-color: #f3e5f5;
@@ -41,7 +41,7 @@ body {
 header.ribbon {
   background: linear-gradient(180deg, var(--brand) 0%, var(--brand2) 100%);
   color: var(--ribbon-fg);
-  padding: 14px 0 12px; /* höheres Ribbon */
+  padding: 14px 0 10px;
 }
 
 .title-wrap {
@@ -52,26 +52,13 @@ header.ribbon {
 }
 
 .title {
-  font-size: 1.6em;
+  font-size: 1.5em;
   font-weight: bold;
 }
 
 .coa {
-  width: 50px;
-  height: 50px;
-}
-
-.version-line {
-  text-align: right;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-/* Hinweise */
-.hint-row {
-  font-size: 12px;
-  margin-top: 8px;
-  text-align: center;
+  width: 60px;
+  height: 60px;
 }
 
 /* Toolbar */
@@ -118,6 +105,14 @@ header.ribbon {
   font-size: 14px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
+}
+
+/* Hinweiszeilen */
+.hint-row {
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+  color: #fff;
 }
 
 /* Tabelle */
@@ -222,9 +217,9 @@ dialog::backdrop { background-color: rgba(0,0,0,0.3); }
 
 /* Baum-Ansicht (SVG) */
 .tree-wrap { padding: 10px; }
-.tree { width: 100%; min-height: 400px; background:#fff; border:1px solid var(--border); border-radius:8px; overflow: hidden; }
+.tree { width: 100%; min-height: 400px; background:#fff; border:1px solid var(--border); border-radius:8px; }
 
-/* Responsive */
+/* Druckansichten */
 @media (max-width: 640px){
   .form-grid{ grid-template-columns: 1fr; }
 }
