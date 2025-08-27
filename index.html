@@ -1,10 +1,13 @@
-<!doctype html>
+<<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Wappenringe der Familie GEPPERT</title>
+
   <link rel="stylesheet" href="styles.css"/>
+  <script src="version.js"></script>
+  <script src="app.js"></script>
 </head>
 <body>
   <div class="app">
@@ -13,14 +16,10 @@
         <img class="coa" src="wappen.png" alt="Wappen" onerror="this.style.display='none'">
         <h1 class="title">Wappenringe der Familie GEPPERT</h1>
       </div>
-      <div class="version-line">
-        <span id="versionRibbon">Softwareversion 1.0.0</span>
-      </div>
       <div class="hint-row">
-        <div id="autoHint">
-          Bearbeiten eines Eintrags durch Doppelklick auf die Person. Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
-        </div>
+        Bearbeiten eines Eintrags durch Doppelklick auf die Person. Personen- und Ring-Code werden vom Programm vergeben. Denke daran, die Datenbank durch Export zu sichern.
       </div>
+
       <div class="toolbar">
         <div class="button-row main-functions">
           <button class="btn" id="btnNew">➕ Neue Person</button>
@@ -76,19 +75,19 @@
         <div class="dlg-body">
           <div class="form-grid">
             <label> Name *
-              <input id="pName" autocomplete="off">
+              <input id="pName" autocomplete="off" required>
             </label>
             <label> Geburtsdatum (TT.MM.JJJJ) *
-              <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000">
+              <input id="pBirth" inputmode="numeric" placeholder="z. B. 04.12.2000" required>
             </label>
             <label> Todesdatum (TT.MM.JJJJ)
               <input id="pDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
             </label>
             <label> Geburtsort *
-              <input id="pPlace">
+              <input id="pPlace" required>
             </label>
             <label> Geschlecht *
-              <select id="pGender">
+              <select id="pGender" required>
                 <option value=""></option>
                 <option value="m">m</option>
                 <option value="w">w</option>
@@ -128,14 +127,14 @@
         </div>
         <div class="dlg-body">
           <div class="form-grid">
-            <label> Name * <input id="eName"></label>
-            <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth"></label>
+            <label> Name * <input id="eName" required></label>
+            <label> Geburtsdatum (TT.MM.JJJJ) * <input id="eBirth" required></label>
             <label> Todesdatum (TT.MM.JJJJ)
               <input id="eDeath" inputmode="numeric" placeholder="z. B. 21.07.2045">
             </label>
-            <label> Geburtsort * <input id="ePlace"></label>
+            <label> Geburtsort * <input id="ePlace" required></label>
             <label> Geschlecht *
-              <select id="eGender">
+              <select id="eGender" required>
                 <option value=""></option>
                 <option value="m">m</option>
                 <option value="w">w</option>
@@ -147,6 +146,9 @@
             <label> Geerbt von Code <input id="eInherited"></label>
             <label> Kommentar <input id="eNote"></label>
           </div>
+          <div style="margin-top:12px; font-size:12px; color:#666">
+            Hinweis: Todesdatum ist optional.
+          </div>
         </div>
         <div class="dlg-actions">
           <button value="cancel">Abbrechen</button>
@@ -155,17 +157,6 @@
       </form>
     </dialog>
 
-    <a href="welcome.html" style="display:none" id="reconnect"></a>
   </div>
-
-  <script src="version.js"></script>
-  <script src="app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '';
-      const vSpan = document.getElementById('versionRibbon');
-      if(vSpan) vSpan.textContent = 'Softwareversion ' + version;
-    });
-  </script>
 </body>
 </html>
