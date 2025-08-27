@@ -143,14 +143,91 @@ function renderTree() {
     computeRingCodes();
     const el = $("#tree");
     el.innerHTML = "";
+
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("width","100%");
-    svg.setAttribute("height","100%");
-    svg.setAttribute("viewBox","0 0 2400 1600");
-    svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("viewBox", "0 0 1200 800");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-    /* Hier kann die Baumzeichnung wie gehabt umgesetzt werden */
+    // Gruppiere Personen nach Generation
+    const gens = {};
+    people.forEach(p => {
+        const g = p.Gen || 1;
+        if (!gens[g]) gens[g] = [];
+        gens[g].push(p);
+    });
+
+    const genCount = Object.keys(gens).length;
+    const xSpacing = 1200 / (Math.max(...Object.values(gens).map(arr => arr.length)) + 1);
+    const ySpacing = 700 / (genCount + 1);
+
+    const nodeMap = {}; // Code -> Position
+    Object.keys(gens).forEach(g => {
+        const arr = gens[g];
+        arr.forEach((p, i) => {
+            const x = (i + 1) * xSpacing;
+            const y = g * ySpacing;
+            nodeMap[p.Code] = { x, y, person: p };
+        });
+    });
+
+    // Linien: Eltern -> Kind
+    people.forEach(p => {
+        if (p.ParentCode && nodeMap[p.ParentCode]) {
+            const parentPos = nodeMap[p.ParentCode];
+            const childPos = nodeMap[p.Code];
+            const line = document.createElementNS(svgNS, "line");
+            line.setAttribute("x1", parentPos.x);
+            line.setAttribute("y1", parentPos.y + 15);
+            line.setAttribute("x2", childPos.x);
+            line.setAttribute("y2", childPos.y - 15);
+            line.setAttribute("stroke", "#555");
+            line.setAttribute("stroke-width", "1.5");
+            svg.appendChild(line);
+        }
+    });
+
+    // Linien: Partner
+    people.forEach(p => {
+        if (p.PartnerCode && nodeMap[p.PartnerCode]) {
+            const p1 = nodeMap[p.Code];
+            const p2 = nodeMap[p.PartnerCode];
+            const line = document.createElementNS(svgNS, "line");
+            line.setAttribute("x1", p1.x);
+            line.setAttribute("y1", p1.y);
+            line.setAttribute("x2", p2.x);
+            line.setAttribute("y2", p2.y);
+            line.setAttribute("stroke", "#e91e63");
+            line.setAttribute("stroke-width", "1");
+            line.setAttribute("stroke-dasharray", "4,2");
+            svg.appendChild(line);
+        }
+    });
+
+    // Knoten zeichnen
+    Object.values(nodeMap).forEach(n => {
+        const circle = document.createElementNS(svgNS, "circle");
+        circle.setAttribute("cx", n.x);
+        circle.setAttribute("cy", n.y);
+        circle.setAttribute("r", "15");
+        const genColor = `var(--gen${n.person.Gen || 1}-color)`;
+        circle.setAttribute("fill", genColor);
+        circle.setAttribute("stroke", "#333");
+        circle.setAttribute("stroke-width", "1.5");
+        svg.appendChild(circle);
+
+        const text = document.createElementNS(svgNS, "text");
+        text.setAttribute("x", n.x);
+        text.setAttribute("y", n.y + 5);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("font-size", "10px");
+        text.setAttribute("fill", "#111");
+        text.textContent = n.person.Name || n.person.Code;
+        svg.appendChild(text);
+    });
+
     el.appendChild(svg);
 }
 
@@ -347,3 +424,4 @@ document.addEventListener('DOMContentLoaded',function(){
     setupEventListeners();
     updateUI();
 });
+
